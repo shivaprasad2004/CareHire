@@ -43,12 +43,12 @@ const Feed = () => {
         <SmartRounds />
 
         {/* Create Post Widget - Redesigned */}
-        <div className="card p-6 mb-8 backdrop-blur-sm bg-white/90 border-slate-200/80">
-           <div className="flex gap-4">
+        <div className="card p-4 sm:p-6 mb-8 backdrop-blur-sm bg-white/90 border-slate-200/80">
+           <div className="flex gap-3 sm:gap-4">
               <div className="relative">
                 <img 
                   src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=2070" 
-                  className="w-12 h-12 rounded-full object-cover ring-4 ring-slate-50"
+                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover ring-4 ring-slate-50"
                   alt="User"
                 />
                 <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full"></div>
@@ -225,8 +225,8 @@ const MedicalCaseCard = ({ author, role, org, time, title, content, image, tags,
         className="card overflow-hidden group hover:border-slate-300 transition-all duration-300"
     >
         {/* Header */}
-        <div className="p-4 sm:p-5 flex items-start justify-between">
-            <div className="flex gap-3 sm:gap-4">
+        <div className="p-3 sm:p-5 flex items-start justify-between">
+            <div className="flex gap-2 sm:gap-4">
                 <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=2070" className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover ring-2 ring-slate-100" />
                 <div>
                     <h4 className="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-1.5">
@@ -245,7 +245,7 @@ const MedicalCaseCard = ({ author, role, org, time, title, content, image, tags,
         </div>
 
         {/* Content */}
-        <div className="px-4 sm:px-5 pb-3">
+        <div className="px-3 sm:px-5 pb-3">
             <div className="mb-3">
                 <span className="inline-block px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 text-[10px] font-bold uppercase tracking-wide mb-2">
                     {category}
@@ -261,7 +261,7 @@ const MedicalCaseCard = ({ author, role, org, time, title, content, image, tags,
 
         {/* Visual Attachment (Bento Style) */}
         {image && (
-            <div className="px-4 sm:px-5 pb-5">
+            <div className="px-3 sm:px-5 pb-5">
                 <div className="relative h-48 sm:h-64 w-full rounded-xl overflow-hidden shadow-sm group-hover:shadow-md transition-shadow">
                     <img src={image} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -273,7 +273,7 @@ const MedicalCaseCard = ({ author, role, org, time, title, content, image, tags,
         )}
 
         {/* Actions Footer */}
-        <div className="px-4 sm:px-5 py-3 sm:py-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-y-3 bg-slate-50/50">
+        <div className="px-3 sm:px-5 py-3 sm:py-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-y-3 bg-slate-50/50">
             <div className="flex gap-2 sm:gap-4">
                 <InteractionButton icon={ThumbsUp} count={stats.likes} label="Endorse" />
                 <InteractionButton icon={MessageCircle} count={stats.comments} label="Discuss" />

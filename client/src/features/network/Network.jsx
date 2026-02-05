@@ -177,11 +177,11 @@ const ProfileCard = ({ profile, type }) => (
     initial={{ opacity: 0, y: 10 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
-    className="card p-5 group hover:border-sky-200 transition-all"
+    className="card p-4 sm:p-5 group hover:border-sky-200 transition-all"
   >
-     <div className="flex items-start gap-4">
+     <div className="flex items-start gap-3 sm:gap-4">
         <div className="relative">
-           <img src={profile.image} alt={profile.name} className="w-16 h-16 rounded-full object-cover border-2 border-white shadow-sm" />
+           <img src={profile.image} alt={profile.name} className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-white shadow-sm" />
            {type === 'mentor' && (
              <div className="absolute -bottom-1 -right-1 bg-amber-400 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm border border-white">
                 MENTOR

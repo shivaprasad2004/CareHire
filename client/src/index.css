@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 @layer base {
+  html, body {
+    @apply overflow-x-hidden;
+  }
+  
   body {
     /* "Aurora" Background - Subtle, calming, premium */
     @apply bg-[#F0F4F8] text-slate-900 antialiased;
@@ -93,7 +97,7 @@
 
   /* Inputs - Cleaner, more space */
   .input {
-    @apply block w-full rounded-xl border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm placeholder:text-slate-400 focus:bg-white focus:border-sky-500 focus:outline-none focus:ring-4 focus:ring-sky-500/10 transition-all duration-200;
+    @apply block w-full rounded-xl border-slate-200 bg-slate-50/50 px-4 py-2.5 text-base sm:text-sm placeholder:text-slate-400 focus:bg-white focus:border-sky-500 focus:outline-none focus:ring-4 focus:ring-sky-500/10 transition-all duration-200;
   }
   
   /* Status Indicators */

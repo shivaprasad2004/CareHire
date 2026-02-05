@@ -98,7 +98,7 @@ const Jobs = () => {
     <div className="max-w-7xl mx-auto py-6 px-4 lg:px-8 pb-24 lg:pb-8">
       
       {/* Header / Search Hero */}
-      <div className="mb-8 relative overflow-hidden rounded-3xl bg-slate-900 text-white p-6 sm:p-12 shadow-2xl">
+      <div className="mb-8 relative overflow-hidden rounded-3xl bg-slate-900 text-white p-5 sm:p-12 shadow-2xl">
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-sky-500/20 rounded-full blur-[100px] -mr-20 -mt-20"></div>
         <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-rose-500/20 rounded-full blur-[80px] -ml-20 -mb-20"></div>
         
@@ -112,11 +112,11 @@ const Jobs = () => {
             Global Opportunity Exchange
           </motion.div>
           
-          <h1 className="text-3xl sm:text-5xl font-bold mb-6 leading-tight">
+          <h1 className="text-2xl sm:text-5xl font-bold mb-6 leading-tight">
             Find Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-teal-400">Dream Job</span> in Healthcare
           </h1>
           
-          <p className="text-slate-300 text-lg mb-8 max-w-xl">
+          <p className="text-slate-300 text-sm sm:text-lg mb-8 max-w-xl">
             Connecting lakhs of students with top organizations across all medical sub-sectors. From rural clinics to international research centers.
           </p>
 
@@ -266,10 +266,10 @@ const JobCard = ({ job }) => (
     viewport={{ once: true }}
     className="card p-0 overflow-hidden group hover:border-sky-200 transition-all duration-300"
   >
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
        <div className="flex flex-col sm:flex-row items-start justify-between mb-4 gap-4 sm:gap-0">
-          <div className="flex gap-4">
-             <img src={job.logo} alt={job.hospital} className="w-14 h-14 rounded-xl object-cover border border-slate-100 shadow-sm shrink-0" />
+          <div className="flex gap-3 sm:gap-4">
+             <img src={job.logo} alt={job.hospital} className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl object-cover border border-slate-100 shadow-sm shrink-0" />
              <div>
                 <h3 className="font-bold text-lg text-slate-900 group-hover:text-sky-600 transition-colors leading-tight">{job.role}</h3>
                 <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500 font-medium mt-1">
