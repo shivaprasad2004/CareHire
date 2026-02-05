@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { UserPlus, Users, Search, MapPin, Building2, GraduationCap, ArrowRight, MessageSquare, Award } from 'lucide-react';
+import Skeleton from '../../components/ui/Skeleton';
 
 const mentorsData = [
   {
@@ -36,11 +37,19 @@ const mentorsData = [
 ];
 
 const Network = () => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate data fetching
+    const timer = setTimeout(() => setIsLoading(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <div className="max-w-7xl mx-auto py-8 px-4 lg:px-8">
+    <div className="max-w-7xl mx-auto py-6 px-4 lg:px-8 pb-24 lg:pb-8">
       
       {/* Network Stats / Header */}
-      <div className="mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="mb-8 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         <StatsCard label="Connections" value="1,240" icon={Users} color="text-blue-500" />
         <StatsCard label="Pending Invites" value="12" icon={UserPlus} color="text-amber-500" />
         <StatsCard label="Teammates" value="28" icon={Building2} color="text-emerald-500" />
@@ -59,20 +68,30 @@ const Network = () => {
                <button className="text-sm font-bold text-sky-600 hover:text-sky-700">View All</button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-               {mentorsData.map((mentor) => (
-                  <ProfileCard key={mentor.id} profile={mentor} type="mentor" />
-               ))}
+               {isLoading ? (
+                 <>
+                   <SkeletonProfileCard />
+                   <SkeletonProfileCard />
+                   <SkeletonProfileCard />
+                 </>
+               ) : (
+                 mentorsData.map((mentor) => (
+                    <ProfileCard key={mentor.id} profile={mentor} type="mentor" />
+                 ))
+               )}
                {/* Explore Card */}
-               <motion.div 
-                 whileHover={{ scale: 1.02 }}
-                 className="card p-6 border-dashed border-2 border-slate-200 bg-slate-50 flex flex-col items-center justify-center text-center cursor-pointer hover:border-sky-300 hover:bg-sky-50 transition-all"
-               >
-                  <div className="h-12 w-12 rounded-full bg-white flex items-center justify-center mb-3 shadow-sm text-sky-500">
-                    <Search size={24} />
-                  </div>
-                  <h3 className="font-bold text-slate-900">Find Specific Mentors</h3>
-                  <p className="text-xs text-slate-500 mt-1 mb-4">Search by specialty, hospital, or school</p>
-               </motion.div>
+               {!isLoading && (
+                 <motion.div 
+                   whileHover={{ scale: 1.02 }}
+                   className="card p-6 border-dashed border-2 border-slate-200 bg-slate-50 flex flex-col items-center justify-center text-center cursor-pointer hover:border-sky-300 hover:bg-sky-50 transition-all"
+                 >
+                    <div className="h-12 w-12 rounded-full bg-white flex items-center justify-center mb-3 shadow-sm text-sky-500">
+                      <Search size={24} />
+                    </div>
+                    <h3 className="font-bold text-slate-900">Find Specific Mentors</h3>
+                    <p className="text-xs text-slate-500 mt-1 mb-4">Search by specialty, hospital, or school</p>
+                 </motion.div>
+               )}
             </div>
           </section>
 
@@ -125,14 +144,30 @@ const Network = () => {
   );
 };
 
+const SkeletonProfileCard = () => (
+  <div className="card p-5">
+    <div className="flex items-start gap-4 mb-4">
+      <Skeleton variant="circle" width={64} height={64} />
+      <div className="space-y-2 pt-1 flex-1">
+        <Skeleton width="80%" height={16} />
+        <Skeleton width="60%" height={12} />
+        <Skeleton width="40%" height={12} />
+      </div>
+    </div>
+    <div className="pt-4 border-t border-slate-100 flex gap-2">
+      <Skeleton width="100%" height={32} className="rounded-xl" />
+    </div>
+  </div>
+);
+
 const StatsCard = ({ label, value, icon: Icon, color }) => (
-  <div className="card p-4 flex items-center gap-4">
-     <div className={`h-10 w-10 rounded-full bg-slate-50 flex items-center justify-center ${color}`}>
-        <Icon size={20} />
+  <div className="card p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
+     <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-slate-50 flex items-center justify-center ${color} shrink-0`}>
+        <Icon size={18} className="sm:w-5 sm:h-5" />
      </div>
-     <div>
-        <div className="text-2xl font-bold text-slate-900 leading-none">{value}</div>
-        <div className="text-xs text-slate-500 font-medium mt-1">{label}</div>
+     <div className="min-w-0">
+        <div className="text-lg sm:text-2xl font-bold text-slate-900 leading-none truncate">{value}</div>
+        <div className="text-[10px] sm:text-xs text-slate-500 font-medium mt-1 truncate">{label}</div>
      </div>
   </div>
 );

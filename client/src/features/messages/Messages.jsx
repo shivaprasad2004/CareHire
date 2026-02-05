@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, MoreVertical, Phone, Video, Image, Paperclip, Send, Check, CheckCheck } from 'lucide-react';
+import { Search, MoreVertical, Phone, Video, Image, Paperclip, Send, Check, CheckCheck, ChevronLeft } from 'lucide-react';
 
 const CONTACTS = [
   {
@@ -58,12 +58,22 @@ const CHAT_HISTORY = [
 
 export default function Messages() {
   const [selectedContact, setSelectedContact] = useState(CONTACTS[0]);
+  const [showChat, setShowChat] = useState(false); // Mobile state
   const [messageInput, setMessageInput] = useState("");
 
+  const handleContactClick = (contact) => {
+    setSelectedContact(contact);
+    setShowChat(true);
+  };
+
+  const handleBack = () => {
+    setShowChat(false);
+  };
+
   return (
-    <div className="h-[calc(100vh-8rem)] bg-white rounded-2xl border border-slate-200 shadow-sm flex overflow-hidden">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row overflow-hidden h-[calc(100vh-8rem)] md:h-[calc(100vh-8rem)]">
       {/* Sidebar - Contact List */}
-      <div className="w-80 border-r border-slate-200 flex flex-col bg-slate-50">
+      <div className={`w-full md:w-72 lg:w-80 border-b md:border-b-0 md:border-r border-slate-200 flex flex-col bg-slate-50 ${showChat ? 'hidden md:flex' : 'flex'}`}>
         <div className="p-4 border-b border-slate-200 bg-white">
           <h2 className="text-xl font-bold text-slate-800 mb-4">Messages</h2>
           <div className="relative">
@@ -80,7 +90,7 @@ export default function Messages() {
           {CONTACTS.map(contact => (
             <div 
               key={contact.id}
-              onClick={() => setSelectedContact(contact)}
+              onClick={() => handleContactClick(contact)}
               className={`p-4 flex items-center space-x-3 cursor-pointer transition-colors ${
                 selectedContact.id === contact.id ? 'bg-sky-50 border-r-4 border-sky-500' : 'hover:bg-slate-100'
               }`}
@@ -113,17 +123,20 @@ export default function Messages() {
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col bg-white">
+      <div className={`flex-1 flex flex-col bg-white ${showChat ? 'flex' : 'hidden md:flex'}`}>
         {/* Chat Header */}
         <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-white">
           <div className="flex items-center space-x-3">
+            <button onClick={handleBack} className="md:hidden p-2 -ml-2 text-slate-500 hover:bg-slate-100 rounded-full">
+               <ChevronLeft size={24} />
+            </button>
             <img src={selectedContact.avatar} alt={selectedContact.name} className="w-10 h-10 rounded-full object-cover" />
             <div>
-              <h3 className="font-bold text-slate-900">{selectedContact.name}</h3>
+              <h3 className="font-bold text-slate-900 text-sm sm:text-base">{selectedContact.name}</h3>
               <p className="text-xs text-emerald-600 font-medium">{selectedContact.role}</p>
             </div>
           </div>
-          <div className="flex items-center space-x-2 text-slate-400">
+          <div className="flex items-center space-x-1 sm:space-x-2 text-slate-400">
             <button className="p-2 hover:bg-slate-100 rounded-full transition-colors"><Phone size={20} /></button>
             <button className="p-2 hover:bg-slate-100 rounded-full transition-colors"><Video size={20} /></button>
             <button className="p-2 hover:bg-slate-100 rounded-full transition-colors"><MoreVertical size={20} /></button>
@@ -131,14 +144,14 @@ export default function Messages() {
         </div>
 
         {/* Messages List */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/50">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 bg-slate-50/50">
           <div className="flex justify-center">
             <span className="text-xs font-medium text-slate-400 bg-slate-100 px-3 py-1 rounded-full">Today</span>
           </div>
           
           {CHAT_HISTORY.map(msg => (
             <div key={msg.id} className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[70%] rounded-2xl px-4 py-3 shadow-sm ${
+              <div className={`max-w-[85%] sm:max-w-[70%] rounded-2xl px-4 py-3 shadow-sm ${
                 msg.sender === 'me' 
                   ? 'bg-sky-500 text-white rounded-br-none' 
                   : 'bg-white text-slate-800 border border-slate-200 rounded-bl-none'
@@ -158,9 +171,9 @@ export default function Messages() {
         </div>
 
         {/* Input Area */}
-        <div className="p-4 border-t border-slate-200 bg-white">
+        <div className="p-3 sm:p-4 border-t border-slate-200 bg-white pb-safe">
           <div className="flex items-center space-x-2 bg-slate-100 rounded-xl p-2">
-            <button className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-lg transition-colors">
+            <button className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-lg transition-colors hidden sm:block">
               <Paperclip size={20} />
             </button>
             <button className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-lg transition-colors">

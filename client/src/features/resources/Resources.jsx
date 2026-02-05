@@ -61,11 +61,11 @@ export default function Resources() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-8 text-white shadow-lg relative overflow-hidden">
+      <div className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-6 sm:p-8 text-white shadow-lg relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
         <div className="relative z-10">
-          <h1 className="text-3xl font-bold mb-2">Medical Knowledge Bank</h1>
-          <p className="text-emerald-50 mb-8 max-w-2xl">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2">Medical Knowledge Bank</h1>
+          <p className="text-emerald-50 mb-8 max-w-2xl text-sm sm:text-base">
             Access the latest clinical guidelines, research papers, and educational resources curated for medical professionals and students.
           </p>
           
@@ -74,7 +74,7 @@ export default function Resources() {
             <input 
               type="text"
               placeholder="Search guidelines, protocols, or topics..." 
-              className="w-full pl-12 pr-4 py-4 rounded-xl bg-white text-slate-900 shadow-xl focus:ring-2 focus:ring-emerald-300 focus:outline-none transition-all placeholder:text-slate-400"
+              className="w-full pl-12 pr-4 py-3 sm:py-4 rounded-xl bg-white text-slate-900 shadow-xl focus:ring-2 focus:ring-emerald-300 focus:outline-none transition-all placeholder:text-slate-400 text-sm sm:text-base"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -83,7 +83,7 @@ export default function Resources() {
       </div>
 
       {/* Categories */}
-      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
         {CATEGORIES.map(category => (
           <button
             key={category}
@@ -100,7 +100,7 @@ export default function Resources() {
       </div>
 
       {/* Resources Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {filteredResources.map((item) => (
           <motion.div
             key={item.id}

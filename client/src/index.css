@@ -11,11 +11,22 @@
       radial-gradient(circle at 15% 50%, rgba(14, 165, 233, 0.08), transparent 25%), 
       radial-gradient(circle at 85% 30%, rgba(20, 184, 166, 0.08), transparent 25%);
     background-attachment: fixed;
+    animation: aurora-breath 15s ease-in-out infinite alternate;
   }
   
   h1, h2, h3, h4, h5, h6 {
     @apply tracking-tight font-bold text-slate-900;
   }
+}
+
+@keyframes aurora-breath {
+  0% { background-position: 0% 0%; background-size: 100% 100%; }
+  100% { background-position: 10% 10%; background-size: 110% 110%; }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 @layer components {
@@ -35,9 +46,26 @@
     @apply hover:translate-y-[-2px] hover:shadow-[0_12px_20px_-8px_rgba(0,0,0,0.08),0_4px_12px_-4px_rgba(0,0,0,0.04)] hover:border-slate-300/80;
   }
 
-  /* Glassmorphism Level 2 - For headers/overlays */
+  /* Glassmorphism Level 3 - Ultra Premium */
   .glass-panel {
-    @apply bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm;
+    @apply bg-white/70 backdrop-blur-2xl border border-white/40 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)];
+  }
+
+  /* Skeleton Loader Class */
+  .skeleton {
+    @apply relative overflow-hidden bg-slate-100 rounded-lg;
+  }
+  .skeleton::after {
+    content: "";
+    @apply absolute inset-0 -translate-x-full;
+    background-image: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0,
+      rgba(255, 255, 255, 0.4) 20%,
+      rgba(255, 255, 255, 0.7) 60%,
+      rgba(255, 255, 255, 0)
+    );
+    animation: shimmer 2s infinite;
   }
 
   /* Buttons - Updated for "Deep Ocean" Palette */
@@ -87,6 +115,23 @@
 }
 
 /* Hide scrollbar for "Smart Rounds" horizontal scroll */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Safe Area Utilities for Mobile */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 20px);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Utilities */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Building2, Globe, GraduationCap, Stethoscope, Search, Filter, Briefcase, CheckCircle2, ChevronRight, Star, HeartPulse, Activity, Pill, Microscope, Smile } from 'lucide-react';
+import Skeleton from '../../components/ui/Skeleton';
 
 const jobsData = [
   {
@@ -81,12 +82,23 @@ const subSectors = [
 
 const Jobs = () => {
   const [activeTab, setActiveTab] = useState('all');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate data fetching
+    const timer = setTimeout(() => setIsLoading(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const filteredJobs = activeTab === 'all' 
+    ? jobsData 
+    : jobsData.filter(job => job.scope === activeTab);
 
   return (
-    <div className="max-w-7xl mx-auto py-8 px-4 lg:px-8">
+    <div className="max-w-7xl mx-auto py-6 px-4 lg:px-8 pb-24 lg:pb-8">
       
       {/* Header / Search Hero */}
-      <div className="mb-8 relative overflow-hidden rounded-3xl bg-slate-900 text-white p-8 sm:p-12 shadow-2xl">
+      <div className="mb-8 relative overflow-hidden rounded-3xl bg-slate-900 text-white p-6 sm:p-12 shadow-2xl">
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-sky-500/20 rounded-full blur-[100px] -mr-20 -mt-20"></div>
         <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-rose-500/20 rounded-full blur-[80px] -ml-20 -mb-20"></div>
         
@@ -136,12 +148,12 @@ const Jobs = () => {
       {/* Sub-Sectors Grid */}
       <div className="mb-10">
         <h3 className="font-bold text-slate-900 text-lg mb-4">Browse by Sub-Sector</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
             {subSectors.map((sector) => (
                 <motion.div 
                     key={sector.name}
                     whileHover={{ y: -4 }}
-                    className="card p-4 flex flex-col items-center justify-center text-center cursor-pointer hover:shadow-md hover:border-sky-200 transition-all group"
+                    className="card p-3 sm:p-4 flex flex-col items-center justify-center text-center cursor-pointer hover:shadow-md hover:border-sky-200 transition-all group"
                 >
                     <div className={`h-12 w-12 rounded-full ${sector.color} bg-opacity-10 flex items-center justify-center text-${sector.color.split('-')[1]}-600 mb-3 group-hover:scale-110 transition-transform`}>
                         <sector.icon size={24} />
@@ -152,8 +164,8 @@ const Jobs = () => {
         </div>
       </div>
 
-      {/* Scope Toggles */}
-      <div className="flex flex-wrap items-center gap-4 mb-8">
+      {/* Scope Toggles - Horizontal Scroll on Mobile */}
+      <div className="flex items-center gap-4 mb-8 overflow-x-auto pb-2 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
         <TabButton active={activeTab === 'all'} onClick={() => setActiveTab('all')} icon={Briefcase} label="All Opportunities" />
         <TabButton active={activeTab === 'rural'} onClick={() => setActiveTab('rural')} icon={Building2} label="Rural Service" />
         <TabButton active={activeTab === 'urban'} onClick={() => setActiveTab('urban')} icon={MapPin} label="Urban Centers" />
@@ -169,9 +181,17 @@ const Jobs = () => {
             <span className="text-sm text-slate-500">Based on your profile</span>
           </div>
 
-          {jobsData.map((job) => (
-             <JobCard key={job.id} job={job} />
-          ))}
+          {isLoading ? (
+            <>
+              <SkeletonJobCard />
+              <SkeletonJobCard />
+              <SkeletonJobCard />
+            </>
+          ) : (
+            filteredJobs.map((job) => (
+               <JobCard key={job.id} job={job} />
+            ))
+          )}
         </div>
 
         {/* Sidebar Widgets */}
@@ -198,13 +218,40 @@ const Jobs = () => {
   );
 };
 
+const SkeletonJobCard = () => (
+  <div className="card p-6 space-y-6">
+    <div className="flex items-start justify-between">
+      <div className="flex gap-4">
+        <Skeleton variant="rect" width={56} height={56} className="rounded-xl" />
+        <div className="space-y-2">
+          <Skeleton width={200} height={20} />
+          <Skeleton width={150} height={16} />
+        </div>
+      </div>
+      <div className="flex flex-col items-end space-y-2">
+        <Skeleton width={80} height={24} className="rounded-lg" />
+        <Skeleton width={60} height={12} />
+      </div>
+    </div>
+    <div className="flex gap-2">
+      <Skeleton width={80} height={24} className="rounded-lg" />
+      <Skeleton width={80} height={24} className="rounded-lg" />
+      <Skeleton width={80} height={24} className="rounded-lg" />
+    </div>
+    <div className="flex justify-between items-center pt-2">
+      <Skeleton width={250} height={16} />
+      <Skeleton width={100} height={16} />
+    </div>
+  </div>
+);
+
 const TabButton = ({ active, onClick, icon: Icon, label }) => (
   <button 
     onClick={onClick}
-    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all border ${
+    className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-all whitespace-nowrap ${
       active 
-      ? 'bg-slate-900 text-white border-slate-900 shadow-md' 
-      : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+      ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/20' 
+      : 'bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-700 border border-slate-200'
     }`}
   >
     <Icon size={16} />
@@ -220,25 +267,26 @@ const JobCard = ({ job }) => (
     className="card p-0 overflow-hidden group hover:border-sky-200 transition-all duration-300"
   >
     <div className="p-6">
-       <div className="flex items-start justify-between mb-4">
+       <div className="flex flex-col sm:flex-row items-start justify-between mb-4 gap-4 sm:gap-0">
           <div className="flex gap-4">
-             <img src={job.logo} alt={job.hospital} className="w-14 h-14 rounded-xl object-cover border border-slate-100 shadow-sm" />
+             <img src={job.logo} alt={job.hospital} className="w-14 h-14 rounded-xl object-cover border border-slate-100 shadow-sm shrink-0" />
              <div>
-                <h3 className="font-bold text-lg text-slate-900 group-hover:text-sky-600 transition-colors">{job.role}</h3>
-                <div className="flex items-center gap-2 text-sm text-slate-500 font-medium">
+                <h3 className="font-bold text-lg text-slate-900 group-hover:text-sky-600 transition-colors leading-tight">{job.role}</h3>
+                <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500 font-medium mt-1">
                    <Building2 size={14} />
                    {job.hospital}
-                   <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
-                   {job.location}
+                   <span className="w-1 h-1 bg-slate-300 rounded-full hidden sm:block"></span>
+                   <span className="hidden sm:inline">{job.location}</span>
                 </div>
+                <div className="text-xs text-slate-400 sm:hidden mt-1">{job.location}</div>
              </div>
           </div>
-          <div className="flex flex-col items-end">
+          <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-2">
              <div className="flex items-center gap-1.5 text-emerald-600 font-bold text-sm bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-100">
                 <Star size={14} fill="currentColor" />
                 {job.match}% Match
              </div>
-             <span className="text-xs text-slate-400 mt-2 font-medium">Posted 2d ago</span>
+             <span className="text-xs text-slate-400 mt-0 sm:mt-2 font-medium">Posted 2d ago</span>
           </div>
        </div>
 
@@ -256,8 +304,8 @@ const JobCard = ({ job }) => (
           ))}
        </div>
 
-       <div className="border-t border-slate-100 pt-4 flex items-center justify-between">
-          <div className="flex items-center gap-4 text-sm text-slate-500">
+       <div className="border-t border-slate-100 pt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-slate-500">
              <span className="font-bold text-slate-900">Requirements:</span>
              {job.requirements.slice(0, 2).map((req, i) => (
                 <span key={i} className="flex items-center gap-1">

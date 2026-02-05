@@ -4,54 +4,54 @@ import { MapPin, Link, Mail, Phone, Download, Building, GraduationCap, Award, Ch
 
 const Profile = () => {
   return (
-    <div className="max-w-5xl mx-auto py-8 px-4 lg:px-8 space-y-6">
+    <div className="max-w-5xl mx-auto py-6 px-4 lg:px-8 space-y-6 pb-24 lg:pb-8">
       
       {/* Profile Header Card */}
       <div className="card overflow-hidden">
         {/* Banner */}
-        <div className="h-48 bg-slate-900 relative">
+        <div className="h-32 sm:h-48 bg-slate-900 relative">
              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent"></div>
         </div>
         
-        <div className="px-8 pb-8">
-            <div className="relative flex justify-between items-end -mt-16 mb-6">
-                <div className="p-1 bg-white rounded-2xl shadow-sm">
+        <div className="px-4 sm:px-8 pb-8">
+            <div className="relative flex flex-col sm:flex-row justify-between items-end -mt-12 sm:-mt-16 mb-6 gap-4">
+                <div className="p-1 bg-white rounded-2xl shadow-sm mx-auto sm:mx-0">
                     <img 
                         src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=2070" 
-                        className="w-32 h-32 rounded-xl object-cover" 
+                        className="w-24 h-24 sm:w-32 sm:h-32 rounded-xl object-cover" 
                         alt="Profile"
                     />
                 </div>
-                <div className="flex gap-3 mb-2">
-                    <button className="btn btn-secondary text-sm">Message</button>
-                    <button className="btn btn-primary text-sm">Connect</button>
+                <div className="flex gap-3 w-full sm:w-auto justify-center sm:justify-end">
+                    <button className="btn btn-secondary text-sm flex-1 sm:flex-none justify-center">Message</button>
+                    <button className="btn btn-primary text-sm flex-1 sm:flex-none justify-center">Connect</button>
                 </div>
             </div>
 
             <div>
-                <div className="flex justify-between items-start">
-                    <div>
-                        <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+                    <div className="text-center sm:text-left w-full">
+                        <h1 className="text-2xl font-bold text-slate-900 flex items-center justify-center sm:justify-start gap-2">
                             Dr. Sarah Jenkins, MD
                             <CheckCircle size={18} className="text-blue-500" fill="currentColor" color="white" />
                         </h1>
                         <p className="text-lg text-slate-600 font-medium">Chief of Neurology at Presbyterian Hospital</p>
-                        <p className="text-slate-500 text-sm mt-1 max-w-2xl">
+                        <p className="text-slate-500 text-sm mt-1 max-w-2xl mx-auto sm:mx-0">
                             Specializing in neurodegenerative disorders and clinical research. Dedicated to advancing patient care through evidence-based medicine.
                         </p>
                     </div>
-                    <div className="hidden md:block text-right">
-                         <div className="flex items-center gap-2 text-slate-500 text-sm justify-end">
+                    <div className="flex flex-col gap-2 text-slate-500 text-sm w-full sm:w-auto items-center sm:items-end">
+                         <div className="flex items-center gap-2">
                             <Building size={14} /> Presbyterian Hospital
                          </div>
-                         <div className="flex items-center gap-2 text-slate-500 text-sm justify-end mt-1">
+                         <div className="flex items-center gap-2">
                             <GraduationCap size={14} /> Harvard Medical School
                          </div>
                     </div>
                 </div>
 
-                <div className="flex flex-wrap gap-6 mt-6 pt-6 border-t border-slate-100">
+                <div className="flex flex-wrap justify-center sm:justify-start gap-4 sm:gap-6 mt-6 pt-6 border-t border-slate-100">
                     <ContactItem icon={MapPin} text="New York, NY" />
                     <ContactItem icon={Link} text="sarahjenkins.md" link />
                     <ContactItem icon={Mail} text="contact@sarahjenkins.md" />
