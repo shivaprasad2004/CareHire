@@ -10,12 +10,6 @@ class ApplicationService {
     }
     
     // Check if already applied
-    const existingApplication = await Application.findOne({
-      where: { userId: userId, jobId: jobId } // Note: check model field names. index.js says applicantId/jobId.
-    });
-    // Wait, index.js says: Application.belongsTo(User, { foreignKey: 'applicantId', as: 'applicant' });
-    // So field is applicantId.
-    
     const existingApp = await Application.findOne({
         where: { applicantId: userId, jobId: jobId }
     });

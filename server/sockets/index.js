@@ -1,6 +1,7 @@
 const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
 const { User, Message, Conversation, Notification } = require('../models');
+const logger = require('../utils/logger');
 
 let io;
 
@@ -13,6 +14,7 @@ const initializeSocket = (server) => {
     }
   });
 
+  // Authentication middleware
   io.use(async (socket, next) => {
     try {
       const token = socket.handshake.auth.token;
@@ -35,48 +37,75 @@ const initializeSocket = (server) => {
   });
 
   io.on('connection', async (socket) => {
-    console.log(`User connected: ${socket.user.email} (${socket.id})`);
-    
-    // Update user status
-    await User.update({ status: 'online', socketId: socket.id }, { where: { id: socket.user.id } });
-    io.emit('user_status_change', { userId: socket.user.id, status: 'online' });
+    logger.info(`User connected: ${socket.user.email} (${socket.id})`);
+
+    // Update user status to online
+    try {
+      await User.update({ status: 'online', socketId: socket.id }, { where: { id: socket.user.id } });
+      io.emit('user_status_change', { userId: socket.user.id, status: 'online' });
+    } catch (error) {
+      logger.error(`Error updating user status: ${error.message}`);
+    }
 
     // Join conversation rooms
     socket.on('join_conversation', (conversationId) => {
       socket.join(`conversation_${conversationId}`);
-      console.log(`User ${socket.user.id} joined conversation ${conversationId}`);
+      logger.info(`User ${socket.user.id} joined conversation ${conversationId}`);
     });
 
-    // Handle new message
-    socket.on('send_message', async (data) => {
-      // data: { conversationId, content, type }
+    // Leave conversation rooms
+    socket.on('leave_conversation', (conversationId) => {
+      socket.leave(`conversation_${conversationId}`);
+      logger.info(`User ${socket.user.id} left conversation ${conversationId}`);
+    });
+
+    // Handle typing events
+    socket.on('typing', ({ conversationId, isTyping }) => {
+      socket.to(`conversation_${conversationId}`).emit('user_typing', {
+        userId: socket.user.id,
+        conversationId,
+        isTyping
+      });
+    });
+
+    // Send message
+    socket.on('send_message', async ({ conversationId, content }) => {
       try {
         const message = await Message.create({
-          conversationId: data.conversationId,
+          conversationId,
           senderId: socket.user.id,
-          content: data.content,
-          type: data.type || 'text'
+          content
         });
 
-        // Populate sender info
         const fullMessage = await Message.findByPk(message.id, {
-          include: [{ model: User, as: 'sender', attributes: ['id', 'firstName', 'lastName', 'avatarUrl'] }]
+          include: [{ 
+            model: User, 
+            as: 'sender', 
+            attributes: ['id', 'firstName', 'lastName', 'profilePicture'] 
+          }]
         });
 
-        io.to(`conversation_${data.conversationId}`).emit('new_message', fullMessage);
+        // Emit to all users in the conversation room
+        io.to(`conversation_${conversationId}`).emit('new_message', fullMessage);
         
-        // Notify other participants (simplified for now)
-        // Ideally, find participants of conversation and send notifications if they are not in the room
+        // Notify other participants (simplified logic - assuming 2 person chat for now or getting participants from conversation)
+        // In a real app, you'd fetch conversation participants here to send notifications
+        
+        logger.info(`Message sent in conversation ${conversationId} by user ${socket.user.id}`);
       } catch (err) {
-        console.error('Error sending message:', err);
+        logger.error(`Error sending message: ${err.message}`);
         socket.emit('error', { message: 'Failed to send message' });
       }
     });
 
     socket.on('disconnect', async () => {
-      console.log(`User disconnected: ${socket.user.email}`);
-      await User.update({ status: 'offline', socketId: null }, { where: { id: socket.user.id } });
-      io.emit('user_status_change', { userId: socket.user.id, status: 'offline' });
+      logger.info(`User disconnected: ${socket.user.email}`);
+      try {
+        await User.update({ status: 'offline', socketId: null }, { where: { id: socket.user.id } });
+        io.emit('user_status_change', { userId: socket.user.id, status: 'offline' });
+      } catch (error) {
+        logger.error(`Error updating user status on disconnect: ${error.message}`);
+      }
     });
   });
 

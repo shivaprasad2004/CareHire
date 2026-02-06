@@ -10,6 +10,10 @@ class NotificationService {
       data
     });
 
+const logger = require('../utils/logger');
+
+// ...
+
     // Real-time emission
     try {
       const io = getIO();
@@ -18,7 +22,7 @@ class NotificationService {
       // Let's assume we use a room pattern 'user_{userId}' which is common
       io.to(`user_${userId}`).emit('new_notification', notification);
     } catch (err) {
-      console.warn('Socket.io not initialized or error emitting event', err);
+      logger.warn(`Socket.io not initialized or error emitting event: ${err.message}`);
     }
 
     return notification;

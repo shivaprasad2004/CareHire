@@ -3,12 +3,25 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/AppError');
 
 exports.getAllJobs = catchAsync(async (req, res, next) => {
-  const jobs = await jobService.getAllJobs(req.query);
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 10;
+  const offset = (page - 1) * limit;
+
+  const filters = {
+    type: req.query.type,
+    location: req.query.location
+  };
+
+  const { count, rows } = await jobService.getJobs(filters, { limit, offset });
+
   res.status(200).json({
     status: 'success',
-    results: jobs.length,
+    results: rows.length,
+    total: count,
+    totalPages: Math.ceil(count / limit),
+    currentPage: page,
     data: {
-      jobs
+      jobs: rows
     }
   });
 });

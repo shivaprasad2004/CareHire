@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const compression = require('compression');
 const morgan = require('morgan');
 const http = require('http');
 require('dotenv').config();
@@ -31,6 +32,7 @@ initializeSocket(server);
 
 // Middleware
 app.use(helmet());
+app.use(compression());
 app.use(cors({
   origin: process.env.CLIENT_URL || '*',
   credentials: true
@@ -51,6 +53,7 @@ app.use('/api/connections', connectionRoutes);
 app.use('/api/resources', resourceRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/applications', applicationRoutes);
 
 // Health Check
 app.get('/', (req, res) => {
@@ -60,14 +63,18 @@ app.get('/', (req, res) => {
 // Global Error Handler
 app.use(errorHandler);
 
+const logger = require('./utils/logger'); // Import logger
+
+// ... imports ...
+
 // Database Connection & Server Start
 db.sequelize.sync({ alter: true }) // Use alter: true to update tables without dropping
   .then(() => {
-    console.log('Database synced successfully.');
+    logger.info('Database synced successfully.');
     server.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
+      logger.info(`Server is running on port ${PORT}`);
     });
   })
   .catch((err) => {
-    console.error('Failed to sync database:', err);
+    logger.error(`Failed to sync database: ${err.message}`);
   });

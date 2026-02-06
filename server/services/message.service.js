@@ -22,12 +22,16 @@ class MessageService {
       include: [{ model: User, as: 'sender', attributes: ['id', 'firstName', 'lastName', 'avatarUrl'] }]
     });
 
+const logger = require('../utils/logger');
+
+// ...
+
     // Real-time emission
     try {
       const io = getIO();
       io.to(`conversation_${conversationId}`).emit('new_message', fullMessage);
     } catch (err) {
-      console.warn('Socket.io not initialized or error emitting event', err);
+      logger.warn(`Socket.io not initialized or error emitting event: ${err.message}`);
     }
 
     return fullMessage;

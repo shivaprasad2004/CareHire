@@ -2,12 +2,20 @@ const postService = require('../services/post.service');
 const catchAsync = require('../utils/catchAsync');
 
 exports.getFeed = catchAsync(async (req, res, next) => {
-  const posts = await postService.getFeed(req.query);
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 10;
+  const offset = (page - 1) * limit;
+
+  const { count, rows } = await postService.getFeed({ limit, offset });
+
   res.status(200).json({
     status: 'success',
-    results: posts.count,
+    results: rows.length,
+    total: count,
+    totalPages: Math.ceil(count / limit),
+    currentPage: page,
     data: {
-      posts: posts.rows
+      posts: rows
     }
   });
 });

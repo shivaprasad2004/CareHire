@@ -34,6 +34,31 @@ class PostService {
 
     return posts;
   }
+
+  async likePost(postId, userId) {
+    const post = await Post.findByPk(postId);
+    if (!post) {
+      throw new AppError('Post not found', 404);
+    }
+
+    const existingLike = await Like.findOne({
+      where: { postId, userId }
+    });
+
+    let liked = false;
+
+    if (existingLike) {
+      await existingLike.destroy();
+      liked = false;
+    } else {
+      await Like.create({ postId, userId });
+      liked = true;
+    }
+
+    const likesCount = await Like.count({ where: { postId } });
+    
+    return { liked, likesCount };
+  }
 }
 
 module.exports = new PostService();
