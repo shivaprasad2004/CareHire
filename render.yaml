@@ -3,7 +3,7 @@ services:
   - type: web
     name: carehire-server
     rootDir: server
-    env: node
+    runtime: node
     buildCommand: npm install
     startCommand: npm start
     envVars:
@@ -17,11 +17,12 @@ services:
           property: connectionString
 
   # Frontend Static Site
-  - type: static
+  - type: web
     name: carehire-client
     rootDir: client
+    runtime: static
     buildCommand: npm install && npm run build
-    publishDir: dist
+    staticPublishPath: dist
     envVars:
       - key: NODE_VERSION
         value: 20.11.0
