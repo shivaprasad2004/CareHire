@@ -98,31 +98,31 @@ const Jobs = () => {
     <div className="max-w-7xl mx-auto py-6 px-4 lg:px-8 pb-24 lg:pb-8">
       
       {/* Header / Search Hero */}
-      <div className="mb-8 relative overflow-hidden rounded-3xl bg-slate-900 text-white p-5 sm:p-12 shadow-2xl">
-        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-sky-500/20 rounded-full blur-[100px] -mr-20 -mt-20"></div>
-        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-rose-500/20 rounded-full blur-[80px] -ml-20 -mb-20"></div>
+      <div className="mb-8 relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-800 via-emerald-900 to-slate-950 text-white p-5 sm:p-12 shadow-2xl">
+        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-emerald-500/25 rounded-full blur-[100px] -mr-20 -mt-20"></div>
+        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-teal-500/25 rounded-full blur-[80px] -ml-20 -mb-20"></div>
         
         <div className="relative z-10 max-w-3xl">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-2 text-sky-400 font-bold tracking-wider text-xs uppercase mb-4"
+            className="flex items-center gap-2 text-emerald-300 font-bold tracking-wider text-xs uppercase mb-4"
           >
             <Globe size={14} />
             Global Opportunity Exchange
           </motion.div>
           
           <h1 className="text-2xl sm:text-5xl font-bold mb-6 leading-tight">
-            Find Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-teal-400">Dream Job</span> in Healthcare
+            Find Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-lime-300">Dream Job</span> in Healthcare
           </h1>
           
-          <p className="text-slate-300 text-sm sm:text-lg mb-8 max-w-xl">
+          <p className="text-emerald-100/90 text-sm sm:text-lg mb-8 max-w-xl">
             Connecting lakhs of students with top organizations across all medical sub-sectors. From rural clinics to international research centers.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 bg-white/10 backdrop-blur-md p-2 rounded-2xl border border-white/10">
              <div className="flex-1 relative group">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-white transition-colors" size={20} />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-100/70 group-focus-within:text-white transition-colors" size={20} />
                 <input 
                   type="text" 
                   placeholder="Job title, specialty, or hospital..." 
@@ -131,14 +131,14 @@ const Jobs = () => {
              </div>
              <div className="h-px sm:h-auto sm:w-px bg-white/10"></div>
              <div className="flex-1 relative group">
-                <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-white transition-colors" size={20} />
+                <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-100/70 group-focus-within:text-white transition-colors" size={20} />
                 <input 
                   type="text" 
                   placeholder="City, state, or 'Remote'..." 
                   className="w-full bg-transparent border-none text-white placeholder:text-slate-400 pl-12 pr-4 py-3 focus:outline-none focus:ring-0"
                 />
              </div>
-             <button className="bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-lg shadow-sky-500/20">
+             <button className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-lg shadow-emerald-500/30">
                Find Jobs
              </button>
           </div>
@@ -153,7 +153,7 @@ const Jobs = () => {
                 <motion.div 
                     key={sector.name}
                     whileHover={{ y: -4 }}
-                    className="card p-3 sm:p-4 flex flex-col items-center justify-center text-center cursor-pointer hover:shadow-md hover:border-sky-200 transition-all group"
+                    className="card p-3 sm:p-4 flex flex-col items-center justify-center text-center cursor-pointer hover:shadow-md hover:border-emerald-200 transition-all group"
                 >
                     <div className={`h-12 w-12 rounded-full ${sector.color} bg-opacity-10 flex items-center justify-center text-${sector.color.split('-')[1]}-600 mb-3 group-hover:scale-110 transition-transform`}>
                         <sector.icon size={24} />
@@ -250,7 +250,7 @@ const TabButton = ({ active, onClick, icon: Icon, label }) => (
     onClick={onClick}
     className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-all whitespace-nowrap ${
       active 
-      ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/20' 
+      ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/25' 
       : 'bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-700 border border-slate-200'
     }`}
   >
@@ -264,7 +264,7 @@ const JobCard = ({ job }) => (
     initial={{ opacity: 0, y: 10 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
-    className="card p-0 overflow-hidden group hover:border-sky-200 transition-all duration-300"
+    className="card p-0 overflow-hidden group hover:border-emerald-200 transition-all duration-300"
   >
     <div className="p-4 sm:p-6">
        <div className="flex flex-col sm:flex-row items-start justify-between mb-4 gap-4 sm:gap-0">
@@ -298,7 +298,7 @@ const JobCard = ({ job }) => (
             {job.salary}
           </span>
           {job.tags.map((tag, i) => (
-             <span key={i} className="px-3 py-1 bg-sky-50 text-sky-700 rounded-lg text-xs font-bold border border-sky-100">
+             <span key={i} className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-xs font-bold border border-emerald-100">
                 {tag}
              </span>
           ))}
@@ -317,7 +317,7 @@ const JobCard = ({ job }) => (
                 <span className="text-xs text-slate-400">+ {job.requirements.length - 2} more</span>
              )}
           </div>
-          <button className="flex items-center gap-2 text-sky-600 font-bold text-sm hover:text-sky-700 transition-colors">
+          <button className="flex items-center gap-2 text-emerald-600 font-bold text-sm hover:text-emerald-700 transition-colors">
              View Details <ChevronRight size={16} />
           </button>
        </div>

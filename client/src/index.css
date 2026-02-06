@@ -8,12 +8,12 @@
   }
   
   body {
-    /* "Aurora" Background - Subtle, calming, premium */
-    @apply bg-[#F0F4F8] text-slate-900 antialiased;
+    /* "Clinical Aurora" Background - Calm medical green theme */
+    @apply bg-[#F3FBF7] text-slate-900 antialiased;
     font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
     background-image: 
-      radial-gradient(circle at 15% 50%, rgba(14, 165, 233, 0.08), transparent 25%), 
-      radial-gradient(circle at 85% 30%, rgba(20, 184, 166, 0.08), transparent 25%);
+      radial-gradient(circle at 15% 50%, rgba(16, 185, 129, 0.10), transparent 25%), 
+      radial-gradient(circle at 85% 30%, rgba(45, 212, 191, 0.08), transparent 25%);
     background-attachment: fixed;
     animation: aurora-breath 15s ease-in-out infinite alternate;
   }
@@ -47,12 +47,17 @@
   
   /* The "Lift" effect for interactive cards */
   .card-hover {
-    @apply hover:translate-y-[-2px] hover:shadow-[0_12px_20px_-8px_rgba(0,0,0,0.08),0_4px_12px_-4px_rgba(0,0,0,0.04)] hover:border-slate-300/80;
+    @apply hover:translate-y-[-2px] hover:shadow-[0_12px_20px_-8px_rgba(0,0,0,0.08),0_4px_12px_-4px_rgba(0,0,0,0.04)] hover:border-emerald-500/20;
   }
 
   /* Glassmorphism Level 3 - Ultra Premium */
   .glass-panel {
-    @apply bg-white/70 backdrop-blur-2xl border border-white/40 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)];
+    @apply bg-white/80 backdrop-blur-xl border border-white/60 shadow-[0_8px_32px_0_rgba(31,38,135,0.05)];
+  }
+
+  /* Gradient Text - Medical Teal */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-500;
   }
 
   /* Skeleton Loader Class */
@@ -72,14 +77,14 @@
     animation: shimmer 2s infinite;
   }
 
-  /* Buttons - Updated for "Deep Ocean" Palette */
+  /* Buttons - Updated for "Clinical Green" Palette */
   .btn {
     @apply inline-flex items-center justify-center px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98];
   }
   
-  /* Primary: Deep Teal / Ocean */
+  /* Primary: Medical Green */
   .btn-primary {
-    @apply bg-[#0f172a] text-white hover:bg-[#1e293b] hover:shadow-lg hover:shadow-slate-900/20 border border-transparent;
+    @apply bg-emerald-600 text-white hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-500/20 border border-transparent focus:ring-emerald-500/40;
   }
   
   /* Accent: Coral / Alert (New) */
@@ -97,13 +102,24 @@
 
   /* Inputs - Cleaner, more space */
   .input {
-    @apply block w-full rounded-xl border-slate-200 bg-slate-50/50 px-4 py-2.5 text-base sm:text-sm placeholder:text-slate-400 focus:bg-white focus:border-sky-500 focus:outline-none focus:ring-4 focus:ring-sky-500/10 transition-all duration-200;
+    @apply block w-full rounded-xl border-slate-200 bg-slate-50/50 px-4 py-3 text-base placeholder:text-slate-400 focus:bg-white focus:border-emerald-500 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all duration-200;
   }
   
   /* Status Indicators */
   .status-dot {
     @apply h-2.5 w-2.5 rounded-full ring-2 ring-white;
   }
+}
+
+/* Floating Action Button Animation */
+@keyframes float-pulse {
+  0% { transform: translateY(0px); box-shadow: 0 5px 15px 0px rgba(0,0,0,0.1); }
+  50% { transform: translateY(-5px); box-shadow: 0 15px 15px 0px rgba(0,0,0,0.15); }
+  100% { transform: translateY(0px); box-shadow: 0 5px 15px 0px rgba(0,0,0,0.1); }
+}
+
+.animate-float {
+  animation: float-pulse 4s ease-in-out infinite;
 }
 
 /* Custom Scrollbar - Refined */
@@ -136,6 +152,11 @@
 }
 
 /* Utilities */
+.mask-image-gradient {
+  mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

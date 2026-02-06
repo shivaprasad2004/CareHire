@@ -8,6 +8,7 @@ import Jobs from './features/jobs/Jobs';
 import Network from './features/network/Network';
 import Resources from './features/resources/Resources';
 import Messages from './features/messages/Messages';
+import FAB from './components/ui/FAB';
 import { AnimatePresence, motion } from 'framer-motion';
 
 function App() {
@@ -101,7 +102,10 @@ function App() {
       
       {/* Mobile Bottom Navigation */}
       {isMobile && (
-        <BottomNav activePage={activePage} onNavigate={setActivePage} />
+        <>
+          <FAB />
+          <BottomNav activePage={activePage} onNavigate={setActivePage} />
+        </>
       )}
 
     </div>

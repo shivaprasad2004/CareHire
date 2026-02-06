@@ -1,8 +1,10 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { MapPin, Link, Mail, Phone, Download, Building, GraduationCap, Award, CheckCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MapPin, Link, Mail, Phone, Download, Building, GraduationCap, Award, CheckCircle, Stethoscope, BookOpen } from 'lucide-react';
 
 const Profile = () => {
+  const [showVerification, setShowVerification] = React.useState(false);
+
   return (
     <div className="max-w-5xl mx-auto py-6 px-4 lg:px-8 space-y-6 pb-24 lg:pb-8">
       
@@ -32,9 +34,29 @@ const Profile = () => {
             <div>
                 <div className="flex flex-col md:flex-row justify-between items-start gap-4">
                     <div className="text-center sm:text-left w-full">
-                        <h1 className="text-2xl font-bold text-slate-900 flex items-center justify-center sm:justify-start gap-2">
+                        <h1 className="text-2xl font-bold text-slate-900 flex items-center justify-center sm:justify-start gap-2 relative">
                             Dr. Sarah Jenkins, MD
-                            <CheckCircle size={18} className="text-blue-500" fill="currentColor" color="white" />
+                            <div 
+                                className="relative cursor-pointer group"
+                                onMouseEnter={() => setShowVerification(true)}
+                                onMouseLeave={() => setShowVerification(false)}
+                            >
+                                <CheckCircle size={18} className="text-blue-500" fill="currentColor" color="white" />
+                                <AnimatePresence>
+                                {showVerification && (
+                                    <motion.div 
+                                        initial={{ opacity: 0, y: 5 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 5 }}
+                                        className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-slate-900 text-white text-xs rounded-lg shadow-xl text-center z-50 pointer-events-none"
+                                    >
+                                        <div className="font-bold text-emerald-400 mb-0.5">Verified Physician</div>
+                                        <div className="text-slate-300 text-[10px]">NPI: 1234567890</div>
+                                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-slate-900 rotate-45"></div>
+                                    </motion.div>
+                                )}
+                                </AnimatePresence>
+                            </div>
                         </h1>
                         <p className="text-lg text-slate-600 font-medium">Chief of Neurology at Presbyterian Hospital</p>
                         <p className="text-slate-500 text-sm mt-1 max-w-2xl mx-auto sm:mx-0">
@@ -94,6 +116,46 @@ const Profile = () => {
                         location="New York, NY"
                         description="Specialized in stroke rehabilitation and neurocritical care. Mentored 15 residents."
                     />
+                </div>
+             </Section>
+
+             {/* Clinical Rotations - New Section for Medical Context */}
+             <Section title="Clinical Rotations">
+                <div className="space-y-6">
+                    <TimelineItem 
+                        role="Internal Medicine Core"
+                        company="Mass General Hospital"
+                        period="2007 - 2008"
+                        location="Boston, MA"
+                        description="Completed 12-week rotation with honors. Focused on inpatient care and diagnostic reasoning."
+                        icon={Stethoscope}
+                    />
+                    <TimelineItem 
+                        role="Neurology Elective"
+                        company="Mayo Clinic"
+                        period="2007"
+                        location="Rochester, MN"
+                        description="4-week intensive elective in movement disorders. Assisted in deep brain stimulation procedures."
+                        icon={Stethoscope}
+                    />
+                </div>
+             </Section>
+
+             {/* Publications & Research - New Section */}
+             <Section title="Publications & Research">
+                <div className="space-y-4">
+                     <PublicationItem 
+                        title="Neuroplasticity in Early-Onset Alzheimer's: A Longitudinal Study"
+                        journal="The Lancet Neurology"
+                        date="Mar 2024"
+                        description="Lead author on a 5-year study involving 450 patients. Demonstrated statistically significant correlation between..."
+                     />
+                     <PublicationItem 
+                        title="Novel Biomarkers for Stroke Rehabilitation Outcomes"
+                        journal="Journal of Neurology"
+                        date="Nov 2022"
+                        description="Identified key protein markers that predict recovery trajectory in post-ischemic stroke patients."
+                     />
                 </div>
              </Section>
 
@@ -176,14 +238,17 @@ const ContactItem = ({ icon: Icon, text, link }) => (
     </div>
 );
 
-const TimelineItem = ({ role, company, period, location, description, current }) => (
+const TimelineItem = ({ role, company, period, location, description, current, icon: Icon }) => (
     <div className="flex gap-4">
         <div className="flex flex-col items-center">
             <div className={`w-3 h-3 rounded-full border-2 border-white shadow-sm ${current ? 'bg-blue-600 ring-4 ring-blue-50' : 'bg-slate-300'}`}></div>
             <div className="w-0.5 flex-1 bg-slate-100 my-1"></div>
         </div>
         <div className="pb-6">
-            <h4 className="font-bold text-slate-900 text-sm">{role}</h4>
+            <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                {role}
+                {Icon && <Icon size={14} className="text-slate-400" />}
+            </h4>
             <div className="text-slate-600 text-sm font-medium">{company}</div>
             <div className="text-slate-400 text-xs mt-0.5 flex items-center gap-2">
                 <span>{period}</span>
@@ -191,6 +256,19 @@ const TimelineItem = ({ role, company, period, location, description, current })
                 <span>{location}</span>
             </div>
             <p className="text-slate-500 text-sm mt-2">{description}</p>
+        </div>
+    </div>
+);
+
+const PublicationItem = ({ title, journal, date, description }) => (
+    <div className="flex gap-4 group cursor-pointer">
+        <div className="h-12 w-12 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center border border-indigo-100 shrink-0 group-hover:bg-indigo-100 transition-colors">
+            <BookOpen size={20} />
+        </div>
+        <div>
+            <h4 className="font-bold text-slate-900 text-sm group-hover:text-blue-600 transition-colors leading-tight">{title}</h4>
+            <div className="text-slate-600 text-xs font-medium mt-0.5">{journal} • {date}</div>
+            <p className="text-slate-500 text-xs mt-1 line-clamp-2">{description}</p>
         </div>
     </div>
 );

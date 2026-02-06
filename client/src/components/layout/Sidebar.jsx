@@ -45,10 +45,10 @@ const Sidebar = ({
       animate={isMobile ? (mobileOpen ? "open" : "closed") : (collapsed ? "collapsed" : "open")}
       variants={sidebarVariants}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className={`fixed left-0 top-0 h-screen bg-white/80 backdrop-blur-xl border-r border-slate-200/50 z-50 flex flex-col shadow-[4px_0_24px_-12px_rgba(0,0,0,0.05)]`}
+      className={`fixed left-0 top-0 h-screen bg-white/90 backdrop-blur-xl border-r border-white/60 z-50 flex flex-col shadow-[4px_0_24px_-12px_rgba(0,0,0,0.05)]`}
     >
       {/* Brand */}
-      <div className="h-20 flex items-center px-6 border-b border-slate-100/50 justify-between">
+      <div className="h-24 flex items-center px-6 border-b border-slate-100/50 justify-between">
         <div className="flex items-center gap-3 overflow-hidden">
           <Logo className="w-10 h-10 shrink-0" />
           {(!collapsed || isMobile) && (
@@ -71,9 +71,9 @@ const Sidebar = ({
       </div>
 
       {/* Navigation */}
-      <div className="flex-1 py-8 px-4 space-y-2 overflow-y-auto overflow-x-hidden">
-        <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-4 mb-4 whitespace-nowrap overflow-hidden">
-          {(!collapsed || isMobile) ? 'Menu' : '...'}
+      <div className="flex-1 py-8 px-4 space-y-2 overflow-y-auto overflow-x-hidden no-scrollbar">
+        <div className="text-xs font-bold text-slate-400/80 uppercase tracking-wider px-4 mb-4 whitespace-nowrap overflow-hidden">
+          {(!collapsed || isMobile) ? 'Main Menu' : '...'}
         </div>
         
         {navItems.map((item) => {
@@ -82,16 +82,16 @@ const Sidebar = ({
             <button
               key={item.id}
               onClick={() => onNavigate(item.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group relative
+              className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 group relative
                 ${isActive 
-                  ? 'bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-lg shadow-slate-900/20' 
-                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                  ? 'bg-gradient-to-r from-emerald-600 to-teal-500 text-white shadow-lg shadow-emerald-500/25' 
+                  : 'text-slate-500 hover:bg-emerald-50/50 hover:text-emerald-700'
                 }`}
             >
-              <item.icon size={20} className={`shrink-0 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-900'}`} />
+              <item.icon size={22} className={`shrink-0 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-emerald-600'}`} />
               
               {(!collapsed || isMobile) && (
-                <span className="font-medium text-sm flex-1 text-left whitespace-nowrap overflow-hidden">{item.label}</span>
+                <span className="font-semibold text-sm flex-1 text-left whitespace-nowrap overflow-hidden">{item.label}</span>
               )}
 
               {/* Active Indicator (Right Border) if collapsed, or standard visual */}
@@ -140,7 +140,7 @@ const Sidebar = ({
       {!isMobile && (
         <button 
           onClick={toggleSidebar}
-          className="absolute -right-3 top-24 h-6 w-6 bg-white border border-slate-200 rounded-full flex items-center justify-center shadow-md text-slate-400 hover:text-sky-600 transition-colors z-50"
+          className="absolute -right-3 top-24 h-6 w-6 bg-white border border-slate-200 rounded-full flex items-center justify-center shadow-md text-slate-400 hover:text-emerald-600 transition-colors z-50"
         >
           {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
         </button>

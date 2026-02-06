@@ -19,8 +19,8 @@ const BottomNav = ({ activePage, onNavigate }) => {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 h-16 bg-white/90 backdrop-blur-xl border-t border-slate-200 z-50 lg:hidden pb-safe">
-      <div className="flex items-center justify-around h-full px-2">
+    <div className="fixed bottom-0 left-0 right-0 min-h-[4rem] bg-white/90 backdrop-blur-xl border-t border-slate-200 z-50 lg:hidden pb-safe">
+      <div className="flex items-center justify-around h-16 px-2">
         {navItems.map((item) => {
           const isActive = activePage === item.id;
           return (

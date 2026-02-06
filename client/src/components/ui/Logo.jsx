@@ -5,9 +5,9 @@ const Logo = ({ className = "w-10 h-10", collapsed = false }) => {
     <div className={`relative flex items-center justify-center ${className}`}>
       
       {/* Background Container - The "Box" the user wanted, but Premium */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl shadow-lg shadow-slate-900/20 border border-slate-700 overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-xl shadow-lg shadow-slate-900/20 border border-slate-700/50 overflow-hidden">
          {/* Subtle internal gloss/shine */}
-         <div className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-gradient-to-br from-white/10 to-transparent opacity-40 rotate-12"></div>
+         <div className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-gradient-to-br from-emerald-400/10 to-transparent opacity-30 rotate-12"></div>
       </div>
 
       {/* The Icon Symbol - Adjusted for Dark Background */}

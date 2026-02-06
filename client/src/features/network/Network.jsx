@@ -172,41 +172,59 @@ const StatsCard = ({ label, value, icon: Icon, color }) => (
   </div>
 );
 
-const ProfileCard = ({ profile, type }) => (
-  <motion.div 
-    initial={{ opacity: 0, y: 10 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    className="card p-4 sm:p-5 group hover:border-sky-200 transition-all"
-  >
-     <div className="flex items-start gap-3 sm:gap-4">
-        <div className="relative">
-           <img src={profile.image} alt={profile.name} className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-white shadow-sm" />
-           {type === 'mentor' && (
-             <div className="absolute -bottom-1 -right-1 bg-amber-400 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm border border-white">
-                MENTOR
-             </div>
-           )}
-        </div>
-        <div className="flex-1 min-w-0">
-           <h3 className="font-bold text-slate-900 truncate">{profile.name}</h3>
-           <p className="text-xs text-sky-600 font-bold mb-0.5">{profile.role}</p>
-           <p className="text-xs text-slate-500 truncate flex items-center gap-1">
-              <Building2 size={10} /> {profile.hospital}
-           </p>
-           <p className="text-[10px] text-slate-400 mt-2">
-              {profile.mutual} mutual connections
-           </p>
-        </div>
-     </div>
-     <div className="mt-4 pt-4 border-t border-slate-100 flex gap-2">
-        <button className="flex-1 btn btn-primary py-1.5 text-xs">Connect</button>
-        <button className="btn btn-secondary px-3 py-1.5">
-           <MessageSquare size={14} />
-        </button>
-     </div>
-  </motion.div>
-);
+const ProfileCard = ({ profile, type }) => {
+  const [status, setStatus] = useState('connect'); // connect, pending, connected
+
+  const handleConnect = () => {
+    setStatus('pending');
+  };
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="card p-4 sm:p-5 group hover:border-sky-200 transition-all"
+    >
+       <div className="flex items-start gap-3 sm:gap-4">
+          <div className="relative">
+             <img src={profile.image} alt={profile.name} className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-white shadow-sm" />
+             {type === 'mentor' && (
+               <div className="absolute -bottom-1 -right-1 bg-amber-400 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm border border-white">
+                  MENTOR
+               </div>
+             )}
+          </div>
+          <div className="flex-1 min-w-0">
+             <h3 className="font-bold text-slate-900 truncate">{profile.name}</h3>
+             <p className="text-xs text-sky-600 font-bold mb-0.5">{profile.role}</p>
+             <p className="text-xs text-slate-500 truncate flex items-center gap-1">
+                <Building2 size={10} /> {profile.hospital}
+             </p>
+             <p className="text-[10px] text-slate-400 mt-2">
+                {profile.mutual} mutual connections
+             </p>
+          </div>
+       </div>
+       <div className="mt-4 pt-4 border-t border-slate-100 flex gap-2">
+          <button 
+            onClick={handleConnect}
+            disabled={status === 'pending'}
+            className={`flex-1 btn py-1.5 text-xs ${
+              status === 'pending' 
+                ? 'bg-slate-100 text-slate-500 cursor-default' 
+                : 'btn-primary'
+            }`}
+          >
+            {status === 'pending' ? 'Pending' : 'Connect'}
+          </button>
+          <button className="btn btn-secondary px-3 py-1.5">
+             <MessageSquare size={14} />
+          </button>
+       </div>
+    </motion.div>
+  );
+};
 
 const CompanyPill = ({ name, count }) => (
     <div className="min-w-[140px] p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-white hover:shadow-md hover:border-sky-200 transition-all cursor-pointer text-center">

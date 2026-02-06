@@ -53,7 +53,7 @@ const RoundCard = ({ item }) => (
   <motion.div 
     whileHover={{ y: -4, scale: 1.02 }}
     whileTap={{ scale: 0.98 }}
-    className="min-w-[200px] p-4 rounded-2xl bg-white/80 backdrop-blur-md border border-slate-200/60 shadow-sm cursor-pointer hover:shadow-lg hover:border-sky-200 transition-all group flex flex-col justify-between h-[150px] relative overflow-hidden"
+    className="min-w-[220px] p-4 rounded-2xl bg-white/80 backdrop-blur-md border border-slate-200/60 shadow-sm cursor-pointer hover:shadow-lg hover:border-sky-200 transition-all group flex flex-col justify-between h-[150px] relative overflow-hidden"
   >
     {/* AI Score Background Gradient */}
     <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
@@ -70,10 +70,10 @@ const RoundCard = ({ item }) => (
     </div>
     
     <div className="relative z-10">
-      <h4 className="font-bold text-slate-900 text-sm leading-tight mb-1 group-hover:text-sky-600 transition-colors">
+      <h4 className="font-bold text-slate-900 text-sm leading-tight mb-1 group-hover:text-sky-600 transition-colors line-clamp-2">
         {item.title}
       </h4>
-      <p className="text-xs text-slate-500 font-medium mb-2">{item.patient}</p>
+      <p className="text-xs text-slate-500 font-medium mb-2 truncate">{item.patient}</p>
       
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1 text-[10px] text-slate-400 font-bold uppercase tracking-wider">
@@ -81,7 +81,11 @@ const RoundCard = ({ item }) => (
             {item.time}
         </div>
         {item.aiScore && (
-            <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-slate-100 text-[9px] font-bold text-slate-600 border border-slate-200">
+            <div className={`flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border ${
+                item.aiScore > 90 ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 
+                item.aiScore > 80 ? 'bg-sky-50 text-sky-600 border-sky-200' :
+                'bg-slate-50 text-slate-500 border-slate-200'
+            }`}>
                 AI {item.aiScore}
             </div>
         )}
