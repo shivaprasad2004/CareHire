@@ -1,33 +1,33 @@
-services: 
-   # Backend Node.js Service 
-   - type: web 
-     name: carehire-server 
-     rootDir: server 
-     env: node 
-     buildCommand: npm install 
-     startCommand: npm start 
-     envVars: 
-       - key: NODE_ENV 
-         value: production 
-       - key: JWT_SECRET 
-         generateValue: true 
-       - key: DATABASE_URL 
-         fromDatabase: 
-           name: carehire-db 
-           property: connectionString 
- 
-   # Frontend Static Site 
-   - type: static 
-     name: carehire-client 
-     rootDir: client 
-     buildCommand: npm install && npm run build 
-     publishDir: dist 
-     envVars: 
-       - key: NODE_VERSION 
-         value: 20.11.0 
- 
- databases: 
-   - name: carehire-db 
-     databaseName: carehire 
-     user: carehire 
-     plan: free # Optional: specify plan
+services:
+  # Backend Node.js Service
+  - type: web
+    name: carehire-server
+    rootDir: server
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: carehire-db
+          property: connectionString
+
+  # Frontend Static Site
+  - type: static
+    name: carehire-client
+    rootDir: client
+    buildCommand: npm install && npm run build
+    publishDir: dist
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.0
+
+databases:
+  - name: carehire-db
+    databaseName: carehire
+    user: carehire
+    plan: free # Optional: specify plan
