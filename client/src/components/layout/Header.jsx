@@ -11,10 +11,10 @@ const Header = ({ activePage, toggleSidebar, isMobile }) => {
       {/* Mobile: Logo & Profile */}
       {isMobile && (
         <div className="flex items-center gap-3 mr-auto">
-          <div className="h-9 w-9 bg-gradient-to-br from-slate-900 to-slate-800 rounded-lg flex items-center justify-center text-emerald-400 font-bold shadow-lg border border-slate-700/50">
+          <div className="h-9 w-9 bg-[#00a651] rounded-lg flex items-center justify-center text-white font-bold shadow-lg shadow-[#00a651]/20">
             CH
           </div>
-          <span className="font-bold text-slate-900 tracking-tight text-lg">CareHire</span>
+          <span className="font-bold text-slate-900 tracking-tight text-lg">Care<span className="text-[#00a651]">Hire</span></span>
         </div>
       )}
 

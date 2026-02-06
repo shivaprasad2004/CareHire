@@ -30,14 +30,14 @@ const BottomNav = ({ activePage, onNavigate }) => {
               className="relative flex flex-col items-center justify-center w-full h-full space-y-1 group"
             >
               <div className={`relative p-1.5 rounded-xl transition-all duration-300 ${
-                isActive ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/20 -translate-y-1' : 'text-slate-400 group-hover:text-slate-600'
+                isActive ? 'bg-[#00a651] text-white shadow-lg shadow-[#00a651]/20 -translate-y-1' : 'text-slate-400 group-hover:text-[#00a651]'
               }`}>
                 <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
                 
                 {/* Badge */}
                 {item.badge && (
                   <span className={`absolute -top-1 -right-1 flex items-center justify-center min-w-[14px] h-[14px] text-[9px] font-bold text-white rounded-full ring-2 ring-white ${
-                    item.badge === 'NEW' ? 'bg-emerald-500' : 'bg-rose-500'
+                    item.badge === 'NEW' ? 'bg-[#00a651]' : 'bg-rose-500'
                   }`}>
                     {item.badge === 'NEW' ? 'N' : item.badge}
                   </span>
@@ -45,7 +45,7 @@ const BottomNav = ({ activePage, onNavigate }) => {
               </div>
               
               <span className={`text-[10px] font-medium transition-colors ${
-                isActive ? 'text-slate-900' : 'text-slate-400'
+                isActive ? 'text-[#00a651]' : 'text-slate-400'
               }`}>
                 {item.label}
               </span>
@@ -54,7 +54,7 @@ const BottomNav = ({ activePage, onNavigate }) => {
               {isActive && (
                 <motion.div 
                   layoutId="bottomNavIndicator"
-                  className="absolute bottom-1 w-1 h-1 bg-slate-900 rounded-full"
+                  className="absolute bottom-1 w-1 h-1 bg-[#00a651] rounded-full"
                 />
               )}
             </button>

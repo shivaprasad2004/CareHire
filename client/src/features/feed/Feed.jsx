@@ -28,7 +28,7 @@ const Feed = () => {
                        className="w-12 h-12 rounded-full object-cover ring-2 ring-white shadow-sm" 
                        alt="Profile"
                    />
-                   <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></div>
+                   <div className="absolute bottom-0 right-0 w-3 h-3 bg-[#00a651] border-2 border-white rounded-full"></div>
                </div>
                <div>
                    <h2 className="font-bold text-slate-900 leading-tight">Good Morning, Sarah</h2>
@@ -58,7 +58,7 @@ const Feed = () => {
                   className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover ring-4 ring-slate-50"
                   alt="User"
                 />
-                <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full"></div>
+                <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#00a651] border-2 border-white rounded-full"></div>
               </div>
               <div className="flex-1">
                  <button className="w-full text-left bg-slate-50 hover:bg-white hover:shadow-md hover:border-slate-300 text-slate-500 py-4 px-4 sm:px-6 rounded-2xl border border-slate-200 transition-all duration-300 text-sm font-medium flex items-center justify-between group">
@@ -265,10 +265,10 @@ const TrendingItem = ({ topic, count, trend, rank }) => (
     <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 cursor-pointer transition-all group border border-transparent hover:border-slate-100">
         <div className="font-black text-slate-200 text-xs w-4">{rank}</div>
         <div className="flex-1">
-            <div className="font-bold text-slate-900 text-xs mb-0.5 group-hover:text-emerald-700 transition-colors">{topic}</div>
+            <div className="font-bold text-slate-900 text-xs mb-0.5 group-hover:text-[#00a651] transition-colors">{topic}</div>
             <div className="text-[10px] text-slate-400 font-medium">{count} posts</div>
         </div>
-        <div className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100 group-hover:bg-emerald-100 transition-colors">
+        <div className="text-[10px] font-bold text-[#00a651] bg-[#00a651]/10 px-2 py-1 rounded-md border border-[#00a651]/20 group-hover:bg-[#00a651]/20 transition-colors">
             {trend}
         </div>
     </div>
@@ -277,7 +277,7 @@ const TrendingItem = ({ topic, count, trend, rank }) => (
 const ProfileWidget = () => (
     <div className="card relative overflow-hidden group border-0 shadow-lg shadow-slate-200/50">
         {/* Premium Header Background */}
-        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-br from-emerald-900 via-emerald-800 to-slate-900">
+        <div className="absolute top-0 left-0 w-full h-32 bg-[#00a651]">
             {/* Abstract Medical Pattern Overlay */}
             <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }}></div>
             <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent"></div>
@@ -293,23 +293,23 @@ const ProfileWidget = () => (
                         alt="Profile"
                     />
                 </div>
-                <div className="absolute -bottom-2 -right-2 bg-emerald-500 text-white p-1.5 rounded-lg shadow-lg border-2 border-white" title="Verified Physician">
+                <div className="absolute -bottom-2 -right-2 bg-[#00a651] text-white p-1.5 rounded-lg shadow-lg border-2 border-white" title="Verified Physician">
                     <ShieldCheck size={16} strokeWidth={3} />
                 </div>
             </div>
 
             {/* Identity */}
             <h3 className="font-bold text-xl text-slate-900 mb-1">Dr. Sarah Jenkins</h3>
-            <p className="text-xs font-bold text-emerald-600 tracking-widest uppercase mb-6">Neurologist • NYC</p>
+            <p className="text-xs font-bold text-[#00a651] tracking-widest uppercase mb-6">Neurologist • NYC</p>
             
             {/* Stats Row - Glass Style */}
             <div className="flex items-center justify-center gap-4 mb-8">
-                <div className="flex-1 bg-slate-50/80 backdrop-blur-sm p-3 rounded-2xl border border-slate-100 hover:border-emerald-200 transition-colors group/stat cursor-pointer">
-                    <div className="text-2xl font-black text-slate-800 group-hover/stat:text-emerald-600 transition-colors">1.2k</div>
+                <div className="flex-1 bg-slate-50/80 backdrop-blur-sm p-3 rounded-2xl border border-slate-100 hover:border-[#00a651]/30 transition-colors group/stat cursor-pointer">
+                    <div className="text-2xl font-black text-slate-800 group-hover/stat:text-[#00a651] transition-colors">1.2k</div>
                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Network</div>
                 </div>
-                <div className="flex-1 bg-slate-50/80 backdrop-blur-sm p-3 rounded-2xl border border-slate-100 hover:border-emerald-200 transition-colors group/stat cursor-pointer">
-                    <div className="text-2xl font-black text-slate-800 group-hover/stat:text-emerald-600 transition-colors">98</div>
+                <div className="flex-1 bg-slate-50/80 backdrop-blur-sm p-3 rounded-2xl border border-slate-100 hover:border-[#00a651]/30 transition-colors group/stat cursor-pointer">
+                    <div className="text-2xl font-black text-slate-800 group-hover/stat:text-[#00a651] transition-colors">98</div>
                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Impact Score</div>
                 </div>
             </div>
@@ -331,7 +331,7 @@ const TrendingWidget = () => (
     <div className="card p-6 border-slate-200/60 shadow-sm hover:shadow-md transition-shadow">
         <div className="flex items-center justify-between mb-6">
             <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2 uppercase tracking-wider">
-                <div className="p-1.5 bg-emerald-100 text-emerald-600 rounded-lg">
+                <div className="p-1.5 bg-[#00a651]/10 text-[#00a651] rounded-lg">
                     <Activity size={14} strokeWidth={2.5} />
                 </div>
                 Global Intel
@@ -346,7 +346,7 @@ const TrendingWidget = () => (
             <TrendingItem topic="Neuroplasticity" count="4.3k" trend="+15%" rank="04" />
         </div>
 
-        <button className="w-full mt-6 py-3 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:text-emerald-700 hover:border-emerald-200 hover:bg-emerald-50/50 transition-all flex items-center justify-center gap-2 group">
+        <button className="w-full mt-6 py-3 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:text-[#00a651] hover:border-[#00a651]/30 hover:bg-[#00a651]/5 transition-all flex items-center justify-center gap-2 group">
             Explore Intelligence Hub 
             <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
         </button>
@@ -354,10 +354,10 @@ const TrendingWidget = () => (
 );
 
 const JobsWidget = () => (
-    <div className="card p-6 border-0 bg-gradient-to-br from-emerald-900 to-slate-900 text-white shadow-xl shadow-emerald-900/20 relative overflow-hidden group">
+    <div className="card p-6 border-0 bg-[#00a651] text-white shadow-xl shadow-[#00a651]/20 relative overflow-hidden group">
         {/* Decorative Background */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
-        <div className="absolute bottom-0 left-0 w-24 h-24 bg-teal-500/10 rounded-full blur-2xl -ml-12 -mb-12"></div>
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full blur-2xl -ml-12 -mb-12"></div>
         
         <div className="relative z-10">
             <h4 className="font-bold text-white text-sm mb-6 flex items-center gap-2 uppercase tracking-wider opacity-90">
@@ -371,29 +371,29 @@ const JobsWidget = () => (
                 <div className="flex items-start gap-3 group/job cursor-pointer p-2 rounded-xl hover:bg-white/5 transition-colors border border-transparent hover:border-white/10">
                     <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center text-xl shadow-inner">🏥</div>
                     <div>
-                        <h5 className="font-bold text-sm text-white leading-tight group-hover/job:text-emerald-300 transition-colors">Rural Health Fellowship</h5>
-                        <p className="text-xs text-slate-400 mt-1 flex items-center gap-1.5">
-                            <span className="w-1 h-1 rounded-full bg-emerald-500"></span>
+                        <h5 className="font-bold text-sm text-white leading-tight group-hover/job:text-white transition-colors">Rural Health Fellowship</h5>
+                        <p className="text-xs text-white/70 mt-1 flex items-center gap-1.5">
+                            <span className="w-1 h-1 rounded-full bg-white"></span>
                             Appalachia Region
                         </p>
                     </div>
-                    <div className="ml-auto text-[10px] font-bold text-emerald-300 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">$4k/mo</div>
+                    <div className="ml-auto text-[10px] font-bold text-white bg-white/20 px-2 py-1 rounded border border-white/20">$4k/mo</div>
                 </div>
                 
                 <div className="flex items-start gap-3 group/job cursor-pointer p-2 rounded-xl hover:bg-white/5 transition-colors border border-transparent hover:border-white/10">
                     <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center text-xl shadow-inner">🏙️</div>
                     <div>
-                        <h5 className="font-bold text-sm text-white leading-tight group-hover/job:text-emerald-300 transition-colors">Cardiology Resident</h5>
-                        <p className="text-xs text-slate-400 mt-1 flex items-center gap-1.5">
-                            <span className="w-1 h-1 rounded-full bg-emerald-500"></span>
+                        <h5 className="font-bold text-sm text-white leading-tight group-hover/job:text-white transition-colors">Cardiology Resident</h5>
+                        <p className="text-xs text-white/70 mt-1 flex items-center gap-1.5">
+                            <span className="w-1 h-1 rounded-full bg-white"></span>
                             Mayo Clinic
                         </p>
                     </div>
-                    <div className="ml-auto text-[10px] font-bold text-purple-300 bg-purple-500/10 px-2 py-1 rounded border border-purple-500/20">Visa</div>
+                    <div className="ml-auto text-[10px] font-bold text-white bg-white/20 px-2 py-1 rounded border border-white/20">Visa</div>
                 </div>
             </div>
 
-            <button className="w-full mt-6 bg-white text-slate-900 hover:bg-emerald-50 font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition-all shadow-lg shadow-white/5 flex items-center justify-center gap-2 group/btn">
+            <button className="w-full mt-6 bg-white text-[#00a651] hover:bg-slate-50 font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition-all shadow-lg shadow-black/5 flex items-center justify-center gap-2 group/btn">
                 Explore 240+ Jobs
                 <ArrowRight size={14} className="group-hover/btn:translate-x-0.5 transition-transform" />
             </button>

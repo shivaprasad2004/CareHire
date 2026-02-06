@@ -31,7 +31,7 @@ const UrgentCases = () => {
                     ? 'bg-gradient-to-tr from-rose-500 to-orange-500 animate-pulse' 
                     : story.urgency === 'high'
                       ? 'bg-gradient-to-tr from-amber-400 to-orange-400'
-                      : 'bg-gradient-to-tr from-emerald-400 to-teal-500'
+                      : 'bg-[#00a651]'
               }`}>
                 <div className="w-full h-full bg-white rounded-full p-[2px]">
                   <img 

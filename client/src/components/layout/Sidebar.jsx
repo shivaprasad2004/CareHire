@@ -84,11 +84,11 @@ const Sidebar = ({
               onClick={() => onNavigate(item.id)}
               className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 group relative
                 ${isActive 
-                  ? 'bg-gradient-to-r from-emerald-600 to-teal-500 text-white shadow-lg shadow-emerald-500/25' 
-                  : 'text-slate-500 hover:bg-emerald-50/50 hover:text-emerald-700'
+                  ? 'bg-[#00a651] text-white shadow-lg shadow-emerald-500/25' 
+                  : 'text-slate-500 hover:bg-emerald-50/50 hover:text-[#00a651]'
                 }`}
             >
-              <item.icon size={22} className={`shrink-0 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-emerald-600'}`} />
+              <item.icon size={22} className={`shrink-0 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-[#00a651]'}`} />
               
               {(!collapsed || isMobile) && (
                 <span className="font-semibold text-sm flex-1 text-left whitespace-nowrap overflow-hidden">{item.label}</span>

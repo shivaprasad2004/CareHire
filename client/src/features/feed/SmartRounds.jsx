@@ -33,7 +33,7 @@ const roundsData = [
     time: '1h ago',
     priority: 'normal',
     icon: Stethoscope,
-    color: 'bg-emerald-500',
+    color: 'bg-[#00a651]',
     aiScore: 72
   },
   {
@@ -82,7 +82,7 @@ const RoundCard = ({ item }) => (
         </div>
         {item.aiScore && (
             <div className={`flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border ${
-                item.aiScore > 90 ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 
+                item.aiScore > 90 ? 'bg-[#00a651]/10 text-[#00a651] border-[#00a651]/30' : 
                 item.aiScore > 80 ? 'bg-sky-50 text-sky-600 border-sky-200' :
                 'bg-slate-50 text-slate-500 border-slate-200'
             }`}>
