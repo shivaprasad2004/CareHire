@@ -39,6 +39,10 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: true
   },
+  education: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
   bio: {
     type: DataTypes.TEXT,
     allowNull: true
@@ -50,9 +54,21 @@ const User = sequelize.define('User', {
   isVerified: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
+  },
+  socketId: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  status: {
+    type: DataTypes.ENUM('online', 'offline', 'busy'),
+    defaultValue: 'offline'
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  indexes: [
+    { fields: ['email'] },
+    { fields: ['role'] }
+  ]
 });
 
 module.exports = User;

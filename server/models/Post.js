@@ -7,21 +7,21 @@ const Post = sequelize.define('Post', {
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true
   },
+  authorId: {
+    type: DataTypes.UUID,
+    allowNull: false
+  },
   content: {
     type: DataTypes.TEXT,
     allowNull: false
   },
-  title: {
-    type: DataTypes.STRING,
-    allowNull: true // Optional for short status updates
-  },
-  category: {
-    type: DataTypes.STRING, // e.g., "Clinical Trial", "Surgical Technique"
-    allowNull: true
-  },
-  imageUrl: {
+  mediaUrl: {
     type: DataTypes.STRING,
     allowNull: true
+  },
+  type: {
+    type: DataTypes.ENUM('Regular', 'SmartRound', 'UrgentCase'),
+    defaultValue: 'Regular'
   },
   likesCount: {
     type: DataTypes.INTEGER,
@@ -32,7 +32,11 @@ const Post = sequelize.define('Post', {
     defaultValue: 0
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  indexes: [
+    { fields: ['authorId'] },
+    { fields: ['type'] }
+  ]
 });
 
 module.exports = Post;

@@ -7,9 +7,17 @@ const Application = sequelize.define('Application', {
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true
   },
+  jobId: {
+    type: DataTypes.UUID,
+    allowNull: false
+  },
+  applicantId: {
+    type: DataTypes.UUID,
+    allowNull: false
+  },
   status: {
-    type: DataTypes.ENUM('pending', 'reviewed', 'interview', 'rejected', 'accepted'),
-    defaultValue: 'pending'
+    type: DataTypes.ENUM('Pending', 'Reviewed', 'Interview', 'Offer', 'Rejected'),
+    defaultValue: 'Pending'
   },
   resumeUrl: {
     type: DataTypes.STRING,
@@ -20,7 +28,12 @@ const Application = sequelize.define('Application', {
     allowNull: true
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  indexes: [
+    { fields: ['jobId'] },
+    { fields: ['applicantId'] },
+    { fields: ['status'] }
+  ]
 });
 
 module.exports = Application;

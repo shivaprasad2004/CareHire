@@ -15,6 +15,11 @@ services:
         fromDatabase:
           name: carehire-db
           property: connectionString
+      - key: CLIENT_URL
+        fromService:
+          type: web
+          name: carehire-client
+          property: url
 
   # Frontend Static Site
   - type: web
@@ -26,6 +31,11 @@ services:
     envVars:
       - key: NODE_VERSION
         value: 20.11.0
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: carehire-server
+          property: url
 
 databases:
   - name: carehire-db

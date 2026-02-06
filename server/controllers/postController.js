@@ -1,68 +1,34 @@
-const { Post, User } = require('../models');
+const postService = require('../services/post.service');
+const catchAsync = require('../utils/catchAsync');
 
-exports.getFeed = async (req, res) => {
-  try {
-    const posts = await Post.findAll({
-      include: [
-        {
-          model: User,
-          as: 'author',
-          attributes: ['id', 'firstName', 'lastName', 'role', 'organization', 'avatarUrl', 'isVerified']
-        }
-      ],
-      order: [['createdAt', 'DESC']]
-    });
-    res.json(posts);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error fetching feed' });
-  }
-};
-
-exports.createPost = async (req, res) => {
-  try {
-    const { content, title, category, imageUrl } = req.body;
-
-    const newPost = await Post.create({
-      content,
-      title,
-      category,
-      imageUrl,
-      userId: req.user.id
-    });
-
-    // Fetch the post again to include author details
-    const postWithAuthor = await Post.findByPk(newPost.id, {
-      include: [
-        {
-          model: User,
-          as: 'author',
-          attributes: ['id', 'firstName', 'lastName', 'role', 'organization', 'avatarUrl', 'isVerified']
-        }
-      ]
-    });
-
-    res.status(201).json(postWithAuthor);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error creating post' });
-  }
-};
-
-exports.likePost = async (req, res) => {
-  try {
-    const post = await Post.findByPk(req.params.id);
-    if (!post) {
-      return res.status(404).json({ message: 'Post not found' });
+exports.getFeed = catchAsync(async (req, res, next) => {
+  const posts = await postService.getFeed(req.query);
+  res.status(200).json({
+    status: 'success',
+    results: posts.count,
+    data: {
+      posts: posts.rows
     }
+  });
+});
 
-    // Simple increment for now (in real app, track user likes in a join table)
-    post.likesCount += 1;
-    await post.save();
+exports.createPost = catchAsync(async (req, res, next) => {
+  const post = await postService.createPost(req.body, req.user.id);
+  res.status(201).json({
+    status: 'success',
+    data: {
+      post
+    }
+  });
+});
 
-    res.json({ message: 'Post liked', likesCount: post.likesCount });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
+exports.likePost = catchAsync(async (req, res, next) => {
+  const result = await postService.likePost(req.params.id, req.user.id);
+  res.status(200).json({
+    status: 'success',
+    data: {
+      liked: result.liked,
+      likesCount: result.likesCount
+    }
+  });
+});
