@@ -48,7 +48,7 @@ export default function Messages({ user, targetConversationId, setTargetConversa
     const fetchConversations = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/messages`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/messages`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
@@ -120,7 +120,7 @@ export default function Messages({ user, targetConversationId, setTargetConversa
         setIsLoadingMessages(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/messages/${selectedConversation.id}`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/messages/${activeConversation.id}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
@@ -159,17 +159,17 @@ export default function Messages({ user, targetConversationId, setTargetConversa
 
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/messages`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                conversationId: selectedConversation.id,
-                content: messageInput
-            })
-        });
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/messages`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    conversationId: activeConversation.id,
+                    content: newMessage
+                })
+            });
 
         if (response.ok) {
             setMessageInput("");

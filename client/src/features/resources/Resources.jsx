@@ -19,7 +19,7 @@ export default function Resources({ user }) {
         if (selectedCategory !== 'All') queryParams.append('category', selectedCategory);
         if (searchQuery) queryParams.append('search', searchQuery);
 
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/resources?${queryParams}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/resources?${queryParams}`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         
@@ -44,7 +44,7 @@ export default function Resources({ user }) {
   const handleDownload = async (id) => {
       try {
         const token = localStorage.getItem('token');
-        await fetch(`${import.meta.env.VITE_API_URL}/resources/${id}/download`, {
+        await fetch(`${import.meta.env.VITE_API_URL}/api/resources/${id}/download`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` }
         });

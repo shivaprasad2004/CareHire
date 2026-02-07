@@ -14,9 +14,7 @@ const Header = ({ activePage, toggleSidebar, isMobile, onLogout }) => {
     const token = localStorage.getItem('token');
     if (token) {
         // Initialize Socket
-        const socketUrl = import.meta.env.VITE_API_URL 
-            ? import.meta.env.VITE_API_URL.replace('/api', '') 
-            : 'http://localhost:5000';
+        const socketUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
             
         socketRef.current = io(socketUrl, {
             auth: { token }
@@ -28,7 +26,7 @@ const Header = ({ activePage, toggleSidebar, isMobile, onLogout }) => {
         });
         
         // Fetch initial notifications
-        fetch(`${import.meta.env.VITE_API_URL}/notifications`, {
+        fetch(`${import.meta.env.VITE_API_URL}/api/notifications`, {
             headers: { 'Authorization': `Bearer ${token}` }
         })
         .then(res => res.json())
@@ -49,7 +47,7 @@ const Header = ({ activePage, toggleSidebar, isMobile, onLogout }) => {
   const handleMarkAsRead = async (id) => {
     try {
         const token = localStorage.getItem('token');
-        await fetch(`${import.meta.env.VITE_API_URL}/notifications/${id}/read`, {
+        await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/${id}/read`, {
             method: 'PATCH',
             headers: { 'Authorization': `Bearer ${token}` }
         });

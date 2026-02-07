@@ -25,7 +25,7 @@ const Auth = ({ onLogin, onBack }) => {
     setError('');
 
     const endpoint = isLogin ? '/auth/login' : '/auth/register';
-    const url = `${import.meta.env.VITE_API_URL}${endpoint}`;
+    const url = `${import.meta.env.VITE_API_URL}/api${endpoint}`;
 
     try {
       const body = isLogin 
