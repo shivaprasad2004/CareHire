@@ -13,7 +13,7 @@ const getApiBaseUrl = () => {
   }
 
   // Remove trailing slash if present to avoid double slashes in constructed URLs
-  return url.replace(/\/$/, "");
+  return url.replace(/\/+$/, "");
 };
 
 export const API_BASE_URL = getApiBaseUrl();
