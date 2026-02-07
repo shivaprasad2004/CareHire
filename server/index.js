@@ -19,6 +19,7 @@ const resourceRoutes = require('./routes/resourceRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const applicationRoutes = require('./routes/applicationRoutes');
+const debugRoutes = require('./routes/debugRoutes');
 const errorHandler = require('./middleware/errorHandler');
 
 const { limiter } = require('./middleware/rateLimiter');
@@ -54,6 +55,7 @@ app.use('/api/resources', resourceRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/applications', applicationRoutes);
+app.use('/api/debug', debugRoutes);
 
 // Health Check
 app.get('/', (req, res) => {
@@ -87,6 +89,11 @@ const logger = require('./utils/logger'); // Import logger
 db.sequelize.sync({ alter: true }) // Use alter: true to update tables without dropping
   .then(() => {
     logger.info('Database synced successfully.');
+    // Log Environment Checks
+    logger.info(`Environment: NODE_ENV=${process.env.NODE_ENV}, PORT=${PORT}`);
+    logger.info(`JWT_SECRET Present: ${!!process.env.JWT_SECRET}`);
+    logger.info(`DATABASE_URL Present: ${!!process.env.DATABASE_URL}`);
+    
     server.listen(PORT, () => {
       logger.info(`Server is running on port ${PORT}`);
     });
