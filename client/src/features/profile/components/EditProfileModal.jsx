@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X, Plus, Trash2, Loader2, Camera } from 'lucide-react';
-import userService from '../../../services/UserService';
+import { uploadService } from '../../../services/uploadService';
 
 const EditProfileModal = ({ user, onClose, onSave }) => {
   const [activeTab, setActiveTab] = useState('basic');
@@ -93,8 +93,12 @@ const EditProfileModal = ({ user, onClose, onSave }) => {
     const file = e.target.files[0];
     if (!file) return;
 
+    const formData = new FormData();
+    formData.append('image', file);
+
     try {
-      const url = await userService.uploadImage(file);
+      const response = await uploadService.uploadImage(formData);
+      const url = response.data?.url || response.url;
       setFormData(prev => ({ ...prev, [field]: url }));
     } catch (error) {
       console.error('Upload failed:', error);

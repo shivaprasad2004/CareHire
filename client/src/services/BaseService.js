@@ -62,13 +62,21 @@ class BaseService {
     });
   }
 
+  async patch(path = '', data, options = {}) {
+    return this.request(path, {
+      ...options,
+      method: 'PATCH',
+      body: data ? JSON.stringify(data) : undefined
+    });
+  }
+
   async delete(path = '', options = {}) {
     return this.request(path, { ...options, method: 'DELETE' });
   }
 
   async upload(path = '', formData, options = {}) {
+    const url = getApiUrl(`${this.endpoint}${path}`);
     const token = localStorage.getItem('token');
-    const url = `${this.baseUrl}${this.endpoint}${path}`;
     
     const response = await fetch(url, {
       method: 'POST',

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, MoreVertical, Phone, Video, Image, Paperclip, Send, Check, CheckCheck, ChevronLeft } from 'lucide-react';
 import { io } from 'socket.io-client';
-import { API_BASE_URL, getApiUrl } from '../../config/api';
+import { API_BASE_URL } from '../../config/api';
+import { messageService } from '../../services/messageService';
 
 export default function Messages({ user, targetConversationId, setTargetConversationId }) {
   const [conversations, setConversations] = useState([]);
@@ -44,12 +45,8 @@ export default function Messages({ user, targetConversationId, setTargetConversa
   useEffect(() => {
     const fetchConversations = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(getApiUrl('/messages'), {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (response.ok) {
-                const data = await response.json();
+            const data = await messageService.getConversations();
+            if (data && data.data) {
                 setConversations(data.data.conversations);
             }
         } catch (error) {
@@ -116,12 +113,8 @@ export default function Messages({ user, targetConversationId, setTargetConversa
     const fetchMessages = async () => {
         setIsLoadingMessages(true);
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/messages/${activeConversation.id}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (response.ok) {
-                const data = await response.json();
+            const data = await messageService.getMessages(selectedConversation.id);
+            if (data && data.data) {
                 // Backend returns DESC (newest first), but we want to display ASC (oldest first)
                 // However, check backend: order: [['createdAt', 'DESC']]
                 // So [newest, ..., oldest]
@@ -177,18 +170,7 @@ export default function Messages({ user, targetConversationId, setTargetConversa
 
     // Also save to DB via API for persistence (redundancy or primary)
     try {
-        const token = localStorage.getItem('token');
-        await fetch(getApiUrl('/messages'), {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                conversationId: selectedConversation.id,
-                content: newMessage.content
-            })
-        });
+        await messageService.sendMessage(selectedConversation.id, newMessage.content);
     } catch (error) {
         console.error("Error sending message:", error);
     }

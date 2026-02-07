@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Plus } from 'lucide-react';
-import storyService from '../../services/storyService';
+import { storyService } from '../../services/storyService';
 
 const UrgentCases = () => {
   const [stories, setStories] = useState([]);

@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Search, Bell, HelpCircle, X, Menu, Check, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { io } from 'socket.io-client';
-import { API_BASE_URL, getApiUrl } from '../../config/api';
+import { API_BASE_URL } from '../../config/api';
+import { notificationService } from '../../services/notificationService';
 
 const Header = ({ activePage, toggleSidebar, isMobile, onLogout }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -25,10 +26,7 @@ const Header = ({ activePage, toggleSidebar, isMobile, onLogout }) => {
         });
         
         // Fetch initial notifications
-        fetch(getApiUrl('/notifications'), {
-            headers: { 'Authorization': `Bearer ${token}` }
-        })
-        .then(res => res.json())
+        notificationService.getAllNotifications()
         .then(data => {
             if (data.status === 'success') {
                 setNotifications(data.data.notifications);
@@ -45,11 +43,7 @@ const Header = ({ activePage, toggleSidebar, isMobile, onLogout }) => {
 
   const handleMarkAsRead = async (id) => {
     try {
-        const token = localStorage.getItem('token');
-        await fetch(getApiUrl(`/notifications/${id}/read`), {
-            method: 'PATCH',
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
+        await notificationService.markAsRead(id);
         
         setNotifications(prev => prev.map(n => 
             n.id === id ? { ...n, isRead: true } : n

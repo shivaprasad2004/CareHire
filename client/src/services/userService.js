@@ -29,14 +29,6 @@ class UserService extends BaseService {
     return this.put('/change-password', passwordData);
   }
 
-  async uploadAvatar(formData) {
-    return this.upload('/upload/avatar', formData);
-  }
-
-  async uploadCover(formData) {
-    return this.upload('/upload/cover', formData);
-  }
-
   formatUserData(user) {
     return {
       ...user,
@@ -112,4 +104,4 @@ class UserService extends BaseService {
   }
 }
 
-export default new UserService();
+export const userService = new UserService();

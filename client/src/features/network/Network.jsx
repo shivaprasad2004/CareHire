@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { getApiUrl } from '../../config/api';
-import { UserPlus, Users, Search, MapPin, Building2, GraduationCap, ArrowRight, MessageSquare, Award } from 'lucide-react';
+import { userService } from '../../services/userService';
+import { UserPlus, Users, Search, Building2, GraduationCap, ArrowRight, MessageSquare, Award } from 'lucide-react';
 import Skeleton from '../../components/ui/Skeleton';
 
 const mentorsData = [
@@ -44,18 +44,9 @@ const Network = ({ user, onNavigate, setTargetConversationId }) => {
   useEffect(() => {
     const fetchNetwork = async () => {
       try {
-        const token = localStorage.getItem('token');
         // Fetch users to populate "Recommended Mentors"
         // Using a general user fetch for now, ideally this would be a recommendation endpoint
-        const response = await fetch(getApiUrl('/users'), {
-             headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-        
-        if (!response.ok) throw new Error('Failed to fetch network');
-        
-        const data = await response.json();
+        const data = await userService.getAllUsers();
         
         // Map users to mentor format
         // Filter out current user if present in the list

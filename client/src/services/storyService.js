@@ -21,4 +21,4 @@ class StoryService extends BaseService {
   }
 }
 
-export default new StoryService();
+export const storyService = new StoryService();

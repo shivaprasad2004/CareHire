@@ -7,7 +7,7 @@ import UrgentCases from './UrgentCases';
 import ProfileWidget from './ProfileWidget';
 import TrendingWidget from './TrendingWidget';
 import JobsWidget from './JobsWidget';
-import postService from '../../services/postService';
+import { postService } from '../../services/postService';
 import withAuth from '../../hoc/withAuth.jsx';
 import withLoading from '../../hoc/withLoading.jsx';
 import Feed from './Feed';

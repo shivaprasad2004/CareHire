@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Lock, User, ArrowRight, Loader2, ArrowLeft } from 'lucide-react';
-import authService from '../../services/authService';
+import { authService } from '../../services/authService';
 
 const Auth = ({ onLogin, onBack }) => {
   const [isLogin, setIsLogin] = useState(true);

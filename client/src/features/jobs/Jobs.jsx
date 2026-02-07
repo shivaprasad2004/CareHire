@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Building2, Globe, GraduationCap, Stethoscope, Search, Filter, Briefcase, CheckCircle2, ChevronRight, Star, HeartPulse, Activity, Pill, Microscope, Smile } from 'lucide-react';
+import { jobService } from '../../services/jobService';
 import Skeleton from '../../components/ui/Skeleton';
 
 const jobsData = [
@@ -88,9 +89,7 @@ const Jobs = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await fetch(getApiUrl('/jobs'));
-        if (!response.ok) throw new Error('Failed to fetch jobs');
-        const data = await response.json();
+        const data = await jobService.getAllJobs();
         
         // Map API data to UI format
         const mappedJobs = data.data.jobs.map(job => ({

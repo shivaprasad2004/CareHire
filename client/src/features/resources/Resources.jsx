@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, BookOpen, FileText, Video, Download, Filter, ChevronRight, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { getApiUrl } from '../../config/api';
+import { resourceService } from '../../services/resourceService';
 
 const CATEGORIES = ["All", "Critical Care", "Cardiology", "Pediatrics", "Neurology", "Surgery", "Pharmacology"];
 
@@ -15,17 +15,12 @@ export default function Resources({ user }) {
     const fetchResources = async () => {
       setIsLoading(true);
       try {
-        const token = localStorage.getItem('token');
-        const queryParams = new URLSearchParams();
-        if (selectedCategory !== 'All') queryParams.append('category', selectedCategory);
-        if (searchQuery) queryParams.append('search', searchQuery);
-
-        const response = await fetch(getApiUrl(`/resources?${queryParams}`), {
-            headers: { 'Authorization': `Bearer ${token}` }
+        const data = await resourceService.getAllResources({ 
+          category: selectedCategory, 
+          search: searchQuery 
         });
         
-        if (response.ok) {
-            const data = await response.json();
+        if (data && data.data) {
             setResources(data.data.resources);
         }
       } catch (error) {
@@ -44,11 +39,7 @@ export default function Resources({ user }) {
 
   const handleDownload = async (id) => {
       try {
-        const token = localStorage.getItem('token');
-        await fetch(getApiUrl(`/resources/${id}/download`), {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
+        await resourceService.downloadResource(id);
         // Optimistically update download count
         setResources(prev => prev.map(r => r.id === id ? { ...r, downloadCount: (r.downloadCount || 0) + 1 } : r));
       } catch (error) {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Clock, AlertCircle, FileText, Stethoscope, ChevronRight, Sparkles } from 'lucide-react';
-import { getApiUrl } from '../../config/api';
+import { roundService } from '../../services/roundService';
 
 const RoundCard = ({ item }) => {
     const Icon = item.icon || Stethoscope;
@@ -58,13 +58,9 @@ const SmartRounds = () => {
   useEffect(() => {
     const fetchRounds = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(getApiUrl('/rounds'), {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            const data = await roundService.getAllRounds();
             
-            if (response.ok) {
-                const data = await response.json();
+            if (data && data.data) {
                 const mappedRounds = data.data.rounds.map(r => ({
                     id: r.id,
                     type: r.type,

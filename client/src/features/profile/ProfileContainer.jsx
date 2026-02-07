@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import userService from '../../services/UserService';
+import { userService } from '../../services/userService';
 import withAuth from '../../hoc/withAuth.jsx';
 import withLoading from '../../hoc/withLoading.jsx';
 import Profile from './Profile';

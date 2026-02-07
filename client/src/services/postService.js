@@ -22,4 +22,4 @@ class PostService extends BaseService {
   }
 }
 
-export default new PostService();
+export const postService = new PostService();
