@@ -3,7 +3,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs-extra');
 const uploadController = require('../controllers/uploadController');
-const authController = require('../controllers/authController');
+const { protect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -39,7 +39,7 @@ const upload = multer({
 });
 
 // Protect all routes
-router.use(authController.protect);
+router.use(protect);
 
 // Route: POST /api/upload
 router.post('/', upload.single('image'), uploadController.uploadFile);
