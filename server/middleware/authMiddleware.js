@@ -15,7 +15,8 @@ exports.protect = catchAsync(async (req, res, next) => {
   }
 
   // 2) Verification token
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  const secret = process.env.JWT_SECRET || 'fallback_secret_do_not_use_in_production';
+  const decoded = jwt.verify(token, secret);
 
   // 3) Check if user still exists
   const currentUser = await User.findByPk(decoded.id);
