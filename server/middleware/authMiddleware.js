@@ -15,8 +15,10 @@ exports.protect = catchAsync(async (req, res, next) => {
   }
 
   // 2) Verification token
-  const secret = process.env.JWT_SECRET || 'fallback_secret_do_not_use_in_production';
-  const decoded = jwt.verify(token, secret);
+  if (!process.env.JWT_SECRET) {
+    return next(new AppError('Server configuration error: JWT_SECRET is missing', 500));
+  }
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
   // 3) Check if user still exists
   const currentUser = await User.findByPk(decoded.id);

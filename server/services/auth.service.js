@@ -60,6 +60,9 @@ class AuthService {
   }
 
   generateToken(id, role) {
+    if (!process.env.JWT_SECRET) {
+      throw new AppError('Server configuration error: JWT_SECRET is missing', 500);
+    }
     return jwt.sign({ id, role }, process.env.JWT_SECRET, {
       expiresIn: '7d'
     });

@@ -22,8 +22,11 @@ const initializeSocket = (server) => {
         return next(new Error('Authentication error'));
       }
       
-      const secret = process.env.JWT_SECRET || 'fallback_secret_do_not_use_in_production';
-      const decoded = jwt.verify(token, secret);
+      if (!process.env.JWT_SECRET) {
+        console.error('Socket authentication failed: JWT_SECRET is missing');
+        return next(new Error('Server configuration error'));
+      }
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
       const user = await User.findByPk(decoded.id);
       
       if (!user) {
