@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { getApiUrl } from '../../config/api';
 import { UserPlus, Users, Search, MapPin, Building2, GraduationCap, ArrowRight, MessageSquare, Award } from 'lucide-react';
 import Skeleton from '../../components/ui/Skeleton';
 
