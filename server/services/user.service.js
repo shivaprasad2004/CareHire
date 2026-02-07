@@ -25,7 +25,7 @@ class UserService {
     }
 
     // Filter allowed fields
-    const allowedFields = ['firstName', 'lastName', 'specialty', 'organization', 'education', 'bio', 'avatarUrl'];
+    const allowedFields = ['firstName', 'lastName', 'title', 'specialty', 'organization', 'education', 'experience', 'skills', 'bio', 'avatarUrl', 'coverUrl', 'location', 'phone', 'website'];
     allowedFields.forEach(field => {
       if (updateData[field] !== undefined) {
         user[field] = updateData[field];

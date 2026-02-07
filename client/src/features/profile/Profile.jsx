@@ -1,11 +1,48 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Link, Mail, Phone, Download, Building, GraduationCap, Award, CheckCircle, Stethoscope, BookOpen } from 'lucide-react';
+import { MapPin, Link, Mail, Phone, Download, Building, GraduationCap, Award, CheckCircle, Stethoscope, BookOpen, Edit2, X, Save, Camera, Loader2, Plus, Trash2 } from 'lucide-react';
+import { userService } from '../../services/userService';
 
-const Profile = ({ user }) => {
-  const [showVerification, setShowVerification] = React.useState(false);
+const Profile = ({ user, onUpdateUser }) => {
+  const [showVerification, setShowVerification] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  
+  if (!user) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="animate-spin text-blue-600" /></div>;
 
-  if (!user) return <div>Loading...</div>;
+  const handleSaveProfile = async (updatedData) => {
+    try {
+      const newUser = await userService.updateProfile(updatedData);
+      if (onUpdateUser) {
+        onUpdateUser(newUser);
+      }
+      setIsEditing(false);
+    } catch (error) {
+      alert('Failed to update profile: ' + error.message);
+    }
+  };
+
+  // Safe JSON parse helpers
+  const getExperience = () => {
+    try {
+      return user.experience ? JSON.parse(user.experience) : [];
+    } catch (e) { return []; }
+  };
+  
+  const getEducation = () => {
+    try {
+      return user.education ? JSON.parse(user.education) : [];
+    } catch (e) { return []; }
+  };
+
+  const getSkills = () => {
+    try {
+      return user.skills ? JSON.parse(user.skills) : [];
+    } catch (e) { return []; }
+  };
+
+  const experience = getExperience();
+  const education = getEducation();
+  const skills = getSkills();
 
   return (
     <div className="max-w-5xl mx-auto py-6 px-4 lg:px-8 space-y-6 pb-24 lg:pb-8">
@@ -14,13 +51,18 @@ const Profile = ({ user }) => {
       <div className="card overflow-hidden">
         {/* Banner */}
         <div className="h-32 sm:h-48 bg-slate-900 relative">
-             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-             <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent"></div>
+             <div className="absolute inset-0 bg-slate-900 opacity-50"></div>
+             {user.coverUrl ? (
+                <img src={user.coverUrl} className="absolute inset-0 w-full h-full object-cover opacity-80" alt="Cover" />
+             ) : (
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+             )}
+             <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent"></div>
         </div>
         
         <div className="px-4 sm:px-8 pb-8">
             <div className="relative flex flex-col sm:flex-row justify-between items-end -mt-12 sm:-mt-16 mb-6 gap-4">
-                <div className="p-1 bg-white rounded-2xl shadow-sm mx-auto sm:mx-0">
+                <div className="p-1 bg-white rounded-2xl shadow-sm mx-auto sm:mx-0 relative group">
                     <img 
                         src={user.avatarUrl || "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=2070"}
                         className="w-24 h-24 sm:w-32 sm:h-32 rounded-xl object-cover" 
@@ -29,7 +71,12 @@ const Profile = ({ user }) => {
                 </div>
                 <div className="flex gap-3 w-full sm:w-auto justify-center sm:justify-end">
                     <button className="btn btn-secondary text-sm flex-1 sm:flex-none justify-center">Message</button>
-                    <button className="btn btn-primary text-sm flex-1 sm:flex-none justify-center">Edit Profile</button>
+                    <button 
+                        onClick={() => setIsEditing(true)}
+                        className="btn btn-primary text-sm flex-1 sm:flex-none justify-center flex items-center gap-2"
+                    >
+                        <Edit2 size={14} /> Edit Profile
+                    </button>
                 </div>
             </div>
 
@@ -37,7 +84,7 @@ const Profile = ({ user }) => {
                 <div className="flex flex-col md:flex-row justify-between items-start gap-4">
                     <div className="text-center sm:text-left w-full">
                         <h1 className="text-2xl font-bold text-slate-900 flex items-center justify-center sm:justify-start gap-2 relative">
-                            {user.title || 'Dr.'} {user.firstName} {user.lastName}
+                            {user.title || ''} {user.firstName} {user.lastName}
                             <div 
                                 className="relative cursor-pointer group"
                                 onMouseEnter={() => setShowVerification(true)}
@@ -61,25 +108,25 @@ const Profile = ({ user }) => {
                             </div>
                         </h1>
                         <p className="text-lg text-slate-600 font-medium">{user.specialty ? `Specialist in ${user.specialty}` : 'Medical Professional'}</p>
-                        <p className="text-slate-500 text-sm mt-1 max-w-2xl mx-auto sm:mx-0">
+                        <p className="text-slate-500 text-sm mt-1 max-w-2xl mx-auto sm:mx-0 whitespace-pre-wrap">
                             {user.bio || 'Passionate about advancing patient care through evidence-based medicine.'}
                         </p>
                     </div>
                     <div className="flex flex-col gap-2 text-slate-500 text-sm w-full sm:w-auto items-center sm:items-end">
                          <div className="flex items-center gap-2">
-                            <Building size={14} /> {user.organization || 'Medical Center'}
+                            <Building size={14} /> {user.organization || 'No Organization'}
                          </div>
                          <div className="flex items-center gap-2">
-                            <GraduationCap size={14} /> {user.education?.[0]?.school || 'Medical School'}
+                            <GraduationCap size={14} /> {education[0]?.school || 'Medical School'}
                          </div>
                     </div>
                 </div>
 
                 <div className="flex flex-wrap justify-center sm:justify-start gap-4 sm:gap-6 mt-6 pt-6 border-t border-slate-100">
-                    <ContactItem icon={MapPin} text={user.location || "New York, NY"} />
-                    <ContactItem icon={Link} text={`${user.firstName.toLowerCase()}${user.lastName.toLowerCase()}.md`} link />
+                    <ContactItem icon={MapPin} text={user.location || "Location not set"} />
+                    <ContactItem icon={Link} text={user.website || "No website"} link={!!user.website} />
                     <ContactItem icon={Mail} text={user.email} />
-                    <ContactItem icon={Phone} text={user.phone || "+1 (555) 123-4567"} />
+                    <ContactItem icon={Phone} text={user.phone || "No phone"} />
                 </div>
             </div>
         </div>
@@ -91,89 +138,47 @@ const Profile = ({ user }) => {
              
              {/* About */}
              <Section title="About">
-                <p className="text-slate-600 text-sm leading-relaxed">
-                    Board-certified Neurologist with over 15 years of experience in treating complex neurological disorders. 
-                    Passionate about advancing research in neuroplasticity and early-onset Alzheimer's detection. 
-                    Currently leading a team of 20+ specialists at Presbyterian Hospital. 
-                    <br/><br/>
-                    Published author of "The Resilient Brain" and regular contributor to The Lancet Neurology.
+                <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-wrap">
+                    {user.bio || "No bio available."}
                 </p>
              </Section>
 
              {/* Experience */}
              <Section title="Experience">
                 <div className="space-y-6">
-                    <TimelineItem 
-                        role="Chief of Neurology"
-                        company="Presbyterian Hospital"
-                        period="2018 - Present"
-                        location="New York, NY"
-                        description="Leading the Department of Neurology. Overseeing clinical operations, research initiatives, and resident training programs."
-                        current
-                    />
-                    <TimelineItem 
-                        role="Senior Neurologist"
-                        company="Mount Sinai"
-                        period="2012 - 2018"
-                        location="New York, NY"
-                        description="Specialized in stroke rehabilitation and neurocritical care. Mentored 15 residents."
-                    />
-                </div>
-             </Section>
-
-             {/* Clinical Rotations - New Section for Medical Context */}
-             <Section title="Clinical Rotations">
-                <div className="space-y-6">
-                    <TimelineItem 
-                        role="Internal Medicine Core"
-                        company="Mass General Hospital"
-                        period="2007 - 2008"
-                        location="Boston, MA"
-                        description="Completed 12-week rotation with honors. Focused on inpatient care and diagnostic reasoning."
-                        icon={Stethoscope}
-                    />
-                    <TimelineItem 
-                        role="Neurology Elective"
-                        company="Mayo Clinic"
-                        period="2007"
-                        location="Rochester, MN"
-                        description="4-week intensive elective in movement disorders. Assisted in deep brain stimulation procedures."
-                        icon={Stethoscope}
-                    />
-                </div>
-             </Section>
-
-             {/* Publications & Research - New Section */}
-             <Section title="Publications & Research">
-                <div className="space-y-4">
-                     <PublicationItem 
-                        title="Neuroplasticity in Early-Onset Alzheimer's: A Longitudinal Study"
-                        journal="The Lancet Neurology"
-                        date="Mar 2024"
-                        description="Lead author on a 5-year study involving 450 patients. Demonstrated statistically significant correlation between..."
-                     />
-                     <PublicationItem 
-                        title="Novel Biomarkers for Stroke Rehabilitation Outcomes"
-                        journal="Journal of Neurology"
-                        date="Nov 2022"
-                        description="Identified key protein markers that predict recovery trajectory in post-ischemic stroke patients."
-                     />
+                    {experience.length > 0 ? experience.map((exp, index) => (
+                        <TimelineItem 
+                            key={index}
+                            role={exp.role}
+                            company={exp.company}
+                            period={exp.period}
+                            location={exp.location}
+                            description={exp.description}
+                            current={exp.current}
+                        />
+                    )) : (
+                        <p className="text-slate-400 text-sm italic">No experience listed.</p>
+                    )}
                 </div>
              </Section>
 
              {/* Education */}
              <Section title="Education">
                 <div className="space-y-4">
-                    <div className="flex gap-4">
-                        <div className="h-12 w-12 bg-slate-50 rounded-lg flex items-center justify-center border border-slate-100 shrink-0">
-                            <GraduationCap className="text-slate-400" />
+                    {education.length > 0 ? education.map((edu, index) => (
+                        <div key={index} className="flex gap-4">
+                            <div className="h-12 w-12 bg-slate-50 rounded-lg flex items-center justify-center border border-slate-100 shrink-0">
+                                <GraduationCap className="text-slate-400" />
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-slate-900 text-sm">{edu.school}</h4>
+                                <p className="text-slate-600 text-sm">{edu.degree}</p>
+                                <p className="text-slate-400 text-xs mt-1">{edu.year}</p>
+                            </div>
                         </div>
-                        <div>
-                            <h4 className="font-bold text-slate-900 text-sm">Harvard Medical School</h4>
-                            <p className="text-slate-600 text-sm">Doctor of Medicine (M.D.)</p>
-                            <p className="text-slate-400 text-xs mt-1">2004 - 2008</p>
-                        </div>
-                    </div>
+                    )) : (
+                        <p className="text-slate-400 text-sm italic">No education listed.</p>
+                    )}
                 </div>
              </Section>
 
@@ -185,35 +190,20 @@ const Profile = ({ user }) => {
              <div className="card p-6">
                 <h3 className="font-bold text-slate-900 mb-4">Skills & Endorsements</h3>
                 <div className="flex flex-wrap gap-2">
-                    {['Neurology', 'Clinical Research', 'Medical Education', 'Healthcare Management', 'Patient Safety'].map(skill => (
+                    {skills.length > 0 ? skills.map(skill => (
                         <span key={skill} className="px-3 py-1 bg-slate-50 text-slate-600 text-xs font-semibold rounded-md border border-slate-100">
                             {skill}
                         </span>
-                    ))}
-                </div>
-                <button className="w-full mt-4 text-sm font-semibold text-blue-600 hover:text-blue-700">
-                    Show all 24 skills
-                </button>
-             </div>
-
-             {/* Certifications */}
-             <div className="card p-6">
-                <h3 className="font-bold text-slate-900 mb-4">Certifications</h3>
-                <div className="space-y-4">
-                    <div className="flex gap-3">
-                        <Award className="text-orange-500 shrink-0" size={20} />
-                        <div>
-                            <div className="font-bold text-slate-900 text-xs">Board Certified in Neurology</div>
-                            <div className="text-slate-500 text-[10px]">American Board of Psychiatry and Neurology</div>
-                        </div>
-                    </div>
+                    )) : (
+                        <span className="text-slate-400 text-xs italic">No skills listed.</span>
+                    )}
                 </div>
              </div>
 
              {/* Resume */}
              <div className="card p-6 bg-slate-900 text-white">
                 <h3 className="font-bold mb-2">Curriculum Vitae</h3>
-                <p className="text-slate-400 text-xs mb-4">Updated January 2026</p>
+                <p className="text-slate-400 text-xs mb-4">Download updated CV</p>
                 <button className="w-full bg-white text-slate-900 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors">
                     <Download size={16} />
                     Download CV
@@ -222,6 +212,18 @@ const Profile = ({ user }) => {
 
          </div>
       </div>
+
+      {/* Edit Profile Modal */}
+      <AnimatePresence>
+        {isEditing && (
+            <EditProfileModal 
+                user={user} 
+                onClose={() => setIsEditing(false)} 
+                onSave={handleSaveProfile} 
+            />
+        )}
+      </AnimatePresence>
+
     </div>
   );
 };
@@ -257,21 +259,253 @@ const TimelineItem = ({ role, company, period, location, description, current, i
                 <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
                 <span>{location}</span>
             </div>
-            <p className="text-slate-500 text-sm mt-2">{description}</p>
+            <p className="text-slate-500 text-sm mt-2 whitespace-pre-wrap">{description}</p>
         </div>
     </div>
 );
 
-const PublicationItem = ({ title, journal, date, description }) => (
-    <div className="flex gap-4 group cursor-pointer">
-        <div className="h-12 w-12 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center border border-indigo-100 shrink-0 group-hover:bg-indigo-100 transition-colors">
-            <BookOpen size={20} />
-        </div>
-        <div>
-            <h4 className="font-bold text-slate-900 text-sm group-hover:text-blue-600 transition-colors leading-tight">{title}</h4>
-            <div className="text-slate-600 text-xs font-medium mt-0.5">{journal} • {date}</div>
-            <p className="text-slate-500 text-xs mt-1 line-clamp-2">{description}</p>
-        </div>
+const EditProfileModal = ({ user, onClose, onSave }) => {
+    const [activeTab, setActiveTab] = useState('basic');
+    const [isLoading, setIsLoading] = useState(false);
+    const [formData, setFormData] = useState({
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        title: user.title || '',
+        specialty: user.specialty || '',
+        organization: user.organization || '',
+        bio: user.bio || '',
+        location: user.location || '',
+        phone: user.phone || '',
+        website: user.website || '',
+        avatarUrl: user.avatarUrl || '',
+        coverUrl: user.coverUrl || '',
+        experience: user.experience ? JSON.parse(user.experience) : [],
+        education: user.education ? JSON.parse(user.education) : [],
+        skills: user.skills ? JSON.parse(user.skills) : []
+    });
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSave = async () => {
+        setIsLoading(true);
+        // Stringify complex fields
+        const dataToSave = {
+            ...formData,
+            experience: JSON.stringify(formData.experience),
+            education: JSON.stringify(formData.education),
+            skills: JSON.stringify(formData.skills)
+        };
+        await onSave(dataToSave);
+        setIsLoading(false);
+    };
+
+    // Experience Helpers
+    const addExperience = () => {
+        setFormData({
+            ...formData,
+            experience: [...formData.experience, { role: '', company: '', period: '', location: '', description: '', current: false }]
+        });
+    };
+    const updateExperience = (index, field, value) => {
+        const newExp = [...formData.experience];
+        newExp[index][field] = value;
+        setFormData({ ...formData, experience: newExp });
+    };
+    const removeExperience = (index) => {
+        const newExp = formData.experience.filter((_, i) => i !== index);
+        setFormData({ ...formData, experience: newExp });
+    };
+
+    // Education Helpers
+    const addEducation = () => {
+        setFormData({
+            ...formData,
+            education: [...formData.education, { school: '', degree: '', year: '' }]
+        });
+    };
+    const updateEducation = (index, field, value) => {
+        const newEdu = [...formData.education];
+        newEdu[index][field] = value;
+        setFormData({ ...formData, education: newEdu });
+    };
+    const removeEducation = (index) => {
+        const newEdu = formData.education.filter((_, i) => i !== index);
+        setFormData({ ...formData, education: newEdu });
+    };
+
+    // Skills Helper
+    const handleSkillsChange = (e) => {
+        // Split by comma and trim
+        const skillsArray = e.target.value.split(',').map(s => s.trim()).filter(s => s);
+        setFormData({ ...formData, skills: skillsArray });
+    };
+
+    const handleFileUpload = async (e, field) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        try {
+            // Optional: Show loading state specific to upload if needed
+            const url = await userService.uploadImage(file);
+            setFormData(prev => ({ ...prev, [field]: url }));
+        } catch (error) {
+            alert('Upload failed: ' + error.message);
+        }
+    };
+
+    return (
+        <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm"
+        >
+            <motion.div 
+                initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }}
+                className="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col"
+            >
+                <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                    <h2 className="font-bold text-lg text-slate-900">Edit Profile</h2>
+                    <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-full transition-colors"><X size={20} /></button>
+                </div>
+                
+                <div className="flex border-b border-slate-100 overflow-x-auto">
+                    {['basic', 'details', 'experience', 'education'].map(tab => (
+                        <button 
+                            key={tab}
+                            onClick={() => setActiveTab(tab)}
+                            className={`px-6 py-3 text-sm font-medium capitalize whitespace-nowrap ${activeTab === tab ? 'text-blue-600 border-b-2 border-blue-600' : 'text-slate-500 hover:text-slate-800'}`}
+                        >
+                            {tab} Info
+                        </button>
+                    ))}
+                </div>
+
+                <div className="flex-1 overflow-y-auto p-6">
+                    {activeTab === 'basic' && (
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <Input label="First Name" name="firstName" value={formData.firstName} onChange={handleChange} />
+                                <Input label="Last Name" name="lastName" value={formData.lastName} onChange={handleChange} />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <Input label="Title (e.g. Dr., RN)" name="title" value={formData.title} onChange={handleChange} />
+                                <Input label="Specialty" name="specialty" value={formData.specialty} onChange={handleChange} />
+                            </div>
+                            <Input label="Current Organization" name="organization" value={formData.organization} onChange={handleChange} />
+                            <Input label="Location" name="location" value={formData.location} onChange={handleChange} />
+                            <div className="grid grid-cols-2 gap-4">
+                                <Input label="Phone" name="phone" value={formData.phone} onChange={handleChange} />
+                                <Input label="Website" name="website" value={formData.website} onChange={handleChange} />
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'details' && (
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Profile Image</label>
+                                <div className="flex flex-col gap-2">
+                                    <div className="flex gap-2 items-center">
+                                        {formData.avatarUrl && <img src={formData.avatarUrl} className="w-12 h-12 rounded-lg object-cover bg-slate-100 border border-slate-200" alt="Preview" />}
+                                        <label className="btn btn-secondary text-xs cursor-pointer flex items-center gap-2">
+                                            <Camera size={14} /> Upload Image
+                                            <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'avatarUrl')} />
+                                        </label>
+                                        <span className="text-xs text-slate-400">or use URL below</span>
+                                    </div>
+                                    <input type="text" name="avatarUrl" value={formData.avatarUrl} onChange={handleChange} className="input text-xs text-slate-500" placeholder="https://..." />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Cover Image</label>
+                                <div className="flex flex-col gap-2">
+                                    <div className="flex gap-2 items-center">
+                                        {formData.coverUrl && <img src={formData.coverUrl} className="w-20 h-10 rounded-lg object-cover bg-slate-100 border border-slate-200" alt="Preview" />}
+                                        <label className="btn btn-secondary text-xs cursor-pointer flex items-center gap-2">
+                                            <Camera size={14} /> Upload Cover
+                                            <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'coverUrl')} />
+                                        </label>
+                                        <span className="text-xs text-slate-400">or use URL below</span>
+                                    </div>
+                                    <input type="text" name="coverUrl" value={formData.coverUrl} onChange={handleChange} className="input text-xs text-slate-500" placeholder="https://..." />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Bio</label>
+                                <textarea name="bio" value={formData.bio} onChange={handleChange} rows={5} className="input" placeholder="Tell us about yourself..." />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Skills (comma separated)</label>
+                                <textarea 
+                                    defaultValue={formData.skills.join(', ')} 
+                                    onBlur={handleSkillsChange}
+                                    className="input" 
+                                    placeholder="Neurology, Research, etc." 
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'experience' && (
+                        <div className="space-y-6">
+                            {formData.experience.map((exp, idx) => (
+                                <div key={idx} className="p-4 border border-slate-200 rounded-xl space-y-3 relative bg-slate-50/50">
+                                    <button onClick={() => removeExperience(idx)} className="absolute top-2 right-2 p-1 text-slate-400 hover:text-red-500"><Trash2 size={16} /></button>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <Input label="Role" value={exp.role} onChange={(e) => updateExperience(idx, 'role', e.target.value)} />
+                                        <Input label="Company" value={exp.company} onChange={(e) => updateExperience(idx, 'company', e.target.value)} />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <Input label="Period" value={exp.period} onChange={(e) => updateExperience(idx, 'period', e.target.value)} />
+                                        <Input label="Location" value={exp.location} onChange={(e) => updateExperience(idx, 'location', e.target.value)} />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-medium text-slate-700 mb-1">Description</label>
+                                        <textarea value={exp.description} onChange={(e) => updateExperience(idx, 'description', e.target.value)} className="input text-sm" rows={2} />
+                                    </div>
+                                </div>
+                            ))}
+                            <button onClick={addExperience} className="w-full py-3 border-2 border-dashed border-slate-200 rounded-xl text-slate-500 font-medium hover:border-blue-500 hover:text-blue-600 transition-colors flex items-center justify-center gap-2">
+                                <Plus size={18} /> Add Experience
+                            </button>
+                        </div>
+                    )}
+
+                    {activeTab === 'education' && (
+                        <div className="space-y-6">
+                            {formData.education.map((edu, idx) => (
+                                <div key={idx} className="p-4 border border-slate-200 rounded-xl space-y-3 relative bg-slate-50/50">
+                                    <button onClick={() => removeEducation(idx)} className="absolute top-2 right-2 p-1 text-slate-400 hover:text-red-500"><Trash2 size={16} /></button>
+                                    <Input label="School" value={edu.school} onChange={(e) => updateEducation(idx, 'school', e.target.value)} />
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <Input label="Degree" value={edu.degree} onChange={(e) => updateEducation(idx, 'degree', e.target.value)} />
+                                        <Input label="Year" value={edu.year} onChange={(e) => updateEducation(idx, 'year', e.target.value)} />
+                                    </div>
+                                </div>
+                            ))}
+                            <button onClick={addEducation} className="w-full py-3 border-2 border-dashed border-slate-200 rounded-xl text-slate-500 font-medium hover:border-blue-500 hover:text-blue-600 transition-colors flex items-center justify-center gap-2">
+                                <Plus size={18} /> Add Education
+                            </button>
+                        </div>
+                    )}
+                </div>
+
+                <div className="p-4 border-t border-slate-100 flex justify-end gap-3 bg-slate-50">
+                    <button onClick={onClose} className="btn btn-secondary">Cancel</button>
+                    <button onClick={handleSave} disabled={isLoading} className="btn btn-primary min-w-[100px]">
+                        {isLoading ? <Loader2 size={18} className="animate-spin mx-auto" /> : 'Save Changes'}
+                    </button>
+                </div>
+            </motion.div>
+        </motion.div>
+    );
+};
+
+const Input = ({ label, ...props }) => (
+    <div>
+        <label className="block text-sm font-medium text-slate-700 mb-1">{label}</label>
+        <input type="text" className="input" {...props} />
     </div>
 );
 

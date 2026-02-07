@@ -40,11 +40,35 @@ const User = sequelize.define('User', {
     allowNull: true
   },
   education: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT, // JSON string: [{ school, degree, year }]
+    allowNull: true
+  },
+  experience: {
+    type: DataTypes.TEXT, // JSON string: [{ role, company, period, description }]
+    allowNull: true
+  },
+  skills: {
+    type: DataTypes.TEXT, // JSON string: ["Skill 1", "Skill 2"]
     allowNull: true
   },
   bio: {
     type: DataTypes.TEXT,
+    allowNull: true
+  },
+  location: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  phone: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  website: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  title: {
+    type: DataTypes.STRING, // e.g., "Dr.", "RN", "MD"
     allowNull: true
   },
   avatarUrl: {

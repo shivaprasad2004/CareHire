@@ -4,12 +4,14 @@ const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
 const http = require('http');
+const path = require('path');
 require('dotenv').config();
 
 const db = require('./models');
 const { initializeSocket } = require('./sockets');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
 const jobRoutes = require('./routes/jobRoutes');
 const postRoutes = require('./routes/postRoutes');
 const roundRoutes = require('./routes/roundRoutes');
@@ -27,6 +29,9 @@ const { limiter } = require('./middleware/rateLimiter');
 const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 5000;
+
+// Trust proxy for Render/Heroku
+app.set('trust proxy', 1);
 
 // Initialize Socket.io
 initializeSocket(server);
@@ -56,9 +61,13 @@ app.use(limiter); // Apply global rate limiter
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve Static Files
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/upload', uploadRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/rounds', roundRoutes);

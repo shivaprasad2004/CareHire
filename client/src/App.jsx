@@ -169,7 +169,10 @@ function App() {
               
               <Route path="/profile" element={
                 <PageTransition>
-                  <Profile user={user} />
+                  <Profile user={user} onUpdateUser={(updatedUser) => {
+                    setUser(updatedUser);
+                    localStorage.setItem('user', JSON.stringify(updatedUser));
+                  }} />
                 </PageTransition>
               } />
               
