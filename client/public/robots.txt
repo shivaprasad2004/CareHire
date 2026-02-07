@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /dashboard
+Disallow: /messages
+Disallow: /profile
+
+Sitemap: https://carehire.onrender.com/sitemap.xml

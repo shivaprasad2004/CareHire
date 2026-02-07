@@ -216,6 +216,17 @@ const Auth = ({ onLogin, onBack }) => {
           </div>
         </div>
       </div>
+      <div className="mt-8 text-center text-sm text-slate-500">
+        <p>
+          By continuing, you agree to CareHire's{' '}
+          <a href="#" className="text-sky-600 hover:text-sky-700 font-medium">Terms of Service</a>
+          {' '}and{' '}
+          <a href="#" className="text-sky-600 hover:text-sky-700 font-medium">Privacy Policy</a>.
+        </p>
+        <p className="mt-4 text-xs">
+          &copy; {new Date().getFullYear()} CareHire. All rights reserved.
+        </p>
+      </div>
     </div>
   );
 };
