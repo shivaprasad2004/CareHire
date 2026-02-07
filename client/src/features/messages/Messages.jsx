@@ -108,7 +108,7 @@ export default function Messages({ user, targetConversationId, setTargetConversa
     socketRef.current.on('new_message', handleNewMessage);
 
     return () => {
-        socketRef.current.off('new_message', handleNewMessage);
+        socketRef.current?.off('new_message', handleNewMessage);
     };
   }, [selectedConversation]);
 

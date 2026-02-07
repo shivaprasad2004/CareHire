@@ -11,6 +11,8 @@ import Resources from './features/resources/Resources';
 import Messages from './features/messages/Messages';
 import Auth from './features/auth/Auth';
 import LandingPage from './features/landing/LandingPage';
+import ArticlesPage from './features/articles/ArticlesPage';
+import ArticleReader from './features/articles/ArticleReader';
 import FAB from './components/ui/FAB';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -94,6 +96,9 @@ function App() {
         <Route path="/login" element={
           <Auth onLogin={handleLogin} onBack={() => navigate('/')} />
         } />
+        <Route path="/articles" element={<ArticlesPage />} />
+        <Route path="/articles/:topic" element={<ArticlesPage />} />
+        <Route path="/article/:id" element={<ArticleReader />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     );
