@@ -13,8 +13,11 @@ class AuthService {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(userData.password, salt);
 
+    // Remove passwordConfirm if present to prevent Sequelize errors
+    const { passwordConfirm, ...dataToSave } = userData;
+
     const newUser = await User.create({
-      ...userData,
+      ...dataToSave,
       passwordHash
     });
 

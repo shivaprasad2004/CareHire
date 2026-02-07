@@ -4,14 +4,56 @@ import { MoreHorizontal, MessageCircle, Share2, ThumbsUp, Bookmark, Activity, Ar
 import SmartRounds from './SmartRounds';
 import UrgentCases from './UrgentCases';
 import Skeleton from '../../components/ui/Skeleton';
+import ProfileWidget from './ProfileWidget';
+import TrendingWidget from './TrendingWidget';
+import JobsWidget from './JobsWidget';
 
-const Feed = () => {
+const Feed = ({ user }) => {
   const [isLoading, setIsLoading] = useState(true);
+  const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    // Simulate data fetching
-    const timer = setTimeout(() => setIsLoading(false), 2000);
-    return () => clearTimeout(timer);
+    const fetchPosts = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/posts`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to fetch posts');
+        
+        const data = await response.json();
+        
+        // Map API data to UI format
+        const mappedPosts = data.data.posts.map(post => ({
+            id: post.id,
+            author: `${post.author.firstName} ${post.author.lastName}`,
+            role: post.author.specialty || 'Healthcare Professional',
+            org: 'Medical Center',
+            time: new Date(post.createdAt).toLocaleDateString(),
+            title: post.type === 'UrgentCase' ? 'Urgent Case' : (post.type === 'SmartRound' ? 'Smart Round' : 'Medical Update'),
+            content: post.content,
+            category: post.type || 'General',
+            image: post.mediaUrl,
+            stats: { 
+                likes: post.likesCount || 0, 
+                comments: post.commentsCount || 0, 
+                consults: 0 
+            },
+            verified: false
+        }));
+
+        setPosts(mappedPosts);
+      } catch (err) {
+        console.error("Error fetching posts:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPosts();
   }, []);
 
   return (
@@ -24,15 +66,15 @@ const Feed = () => {
            <div className="flex items-center gap-3">
                <div className="relative">
                    <img 
-                       src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=2070" 
+                       src={user?.avatarUrl || "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=2070"}
                        className="w-12 h-12 rounded-full object-cover ring-2 ring-white shadow-sm" 
                        alt="Profile"
                    />
                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-[#00a651] border-2 border-white rounded-full"></div>
                </div>
                <div>
-                   <h2 className="font-bold text-slate-900 leading-tight">Good Morning, Sarah</h2>
-                   <p className="text-xs text-slate-500 font-medium">3 Urgencies • 5 New Cases</p>
+                   <h2 className="font-bold text-slate-900 leading-tight">Good Morning, {user?.firstName}</h2>
+                   <p className="text-xs text-slate-500 font-medium">{user?.specialty || 'Medical Professional'}</p>
                </div>
            </div>
            <button className="h-10 w-10 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-500 hover:bg-slate-50 shadow-sm">
@@ -54,7 +96,7 @@ const Feed = () => {
            <div className="flex gap-3 sm:gap-4">
               <div className="relative">
                 <img 
-                  src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=2070" 
+                  src={user?.avatarUrl || "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=2070"}
                   className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover ring-4 ring-slate-50"
                   alt="User"
                 />
@@ -81,35 +123,20 @@ const Feed = () => {
                <SkeletonCard />
                <SkeletonCard />
              </>
-           ) : (
-             <>
+           ) : posts.length > 0 ? (
+             posts.map(post => (
                <MedicalCaseCard 
-                 author="Dr. Elena Foster"
-                 role="Neurologist"
-                 org="Mount Sinai Hospital"
-                 time="2h ago"
-                 title="Early-Onset Alzheimer's: Synaptic Density Analysis"
-                 content="Observing remarkable neuroplasticity in the test group (n=450). The initial data suggests that the new compound significantly reduces beta-amyloid plaque formation."
-                 category="Clinical Trial"
-                 image="https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&q=80&w=2070"
-                 stats={{ likes: 423, comments: 89, consults: 12 }}
-                 verified
+                 key={post.id}
+                 {...post}
                />
+             ))
+           ) : (
+             <div className="text-center py-10 text-slate-500">
+                <p>No posts yet. Be the first to share a case!</p>
+             </div>
+           )}
 
-               <MedicalCaseCard 
-                 author="James Wilson"
-                 role="Senior Surgeon"
-                 org="Cleveland Clinic"
-                 time="5h ago"
-                 title="Complex Aortic Arch Reconstruction"
-                content="Preparing for a Type A dissection repair utilizing the frozen elephant trunk technique. Seeking insights on cerebral protection strategies."
-                category="Surgical Technique"
-                image="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80&w=2070"
-                stats={{ likes: 215, comments: 45, consults: 8 }}
-                verified
-              />
-
-              {/* Smart Job Match - Native Ad Style */}
+           {/* Smart Job Match - Native Ad Style */}
               <div className="card p-5 bg-gradient-to-r from-slate-900 to-slate-800 text-white relative overflow-hidden group">
                  <div className="absolute top-0 right-0 p-32 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-white/10 transition-colors duration-500"></div>
                  
@@ -129,13 +156,11 @@ const Feed = () => {
                     </button>
                  </div>
               </div>
-             </>
-           )}
         </div>
 
         {/* Mobile Widgets (Visible on small screens) */}
         <div className="lg:hidden mt-8 space-y-6">
-            <ProfileWidget />
+            <ProfileWidget user={user} />
             <TrendingWidget />
             <JobsWidget />
         </div>
@@ -144,7 +169,7 @@ const Feed = () => {
 
       {/* Right Sidebar (Widgets) - Refined */}
       <div className="hidden lg:block w-80 space-y-6">
-         <ProfileWidget />
+         <ProfileWidget user={user} />
          <TrendingWidget />
          <JobsWidget />
       </div>
@@ -201,204 +226,51 @@ const MedicalCaseCard = ({ author, role, org, time, title, content, image, tags,
                     </p>
                 </div>
             </div>
-            <button className="text-slate-400 hover:text-slate-900 p-1 rounded-full hover:bg-slate-100 transition-colors">
+            <button className="text-slate-400 hover:text-slate-600 p-2 rounded-full hover:bg-slate-50">
                 <MoreHorizontal size={20} />
             </button>
         </div>
 
         {/* Content */}
         <div className="px-3 sm:px-5 pb-3">
-            <div className="mb-3">
-                <span className="inline-block px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 text-[10px] font-bold uppercase tracking-wide mb-2">
+             {category && (
+                <span className="inline-block px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-wider mb-2">
                     {category}
                 </span>
-                <h3 className="text-base sm:text-lg font-bold text-slate-900 leading-snug mb-2 group-hover:text-sky-600 transition-colors cursor-pointer">
-                    {title}
-                </h3>
-                <p className="text-slate-600 text-sm leading-relaxed">
-                    {content}
-                </p>
-            </div>
-        </div>
-
-        {/* Visual Attachment (Bento Style) */}
-        {image && (
-            <div className="px-3 sm:px-5 pb-5">
-                <div className="relative h-48 sm:h-64 w-full rounded-xl overflow-hidden shadow-sm group-hover:shadow-md transition-shadow">
-                    <img src={image} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <button className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-md text-slate-900 text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                        View Analysis
-                    </button>
-                </div>
-            </div>
-        )}
-
-        {/* Actions Footer */}
-        <div className="px-3 sm:px-5 py-3 sm:py-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-y-3 bg-slate-50/50">
-            <div className="flex gap-2 sm:gap-4">
-                <InteractionButton icon={ThumbsUp} count={stats.likes} label="Endorse" />
-                <InteractionButton icon={MessageCircle} count={stats.comments} label="Discuss" />
-                <InteractionButton icon={FileText} count={stats.consults} label="Consult" />
-            </div>
-            <div className="flex gap-2">
-                <button className="p-2 text-slate-400 hover:text-sky-600 hover:bg-sky-50 rounded-lg transition-colors">
-                    <Bookmark size={18} />
-                </button>
-                <button className="p-2 text-slate-400 hover:text-sky-600 hover:bg-sky-50 rounded-lg transition-colors">
-                    <Share2 size={18} />
-                </button>
-            </div>
-        </div>
-    </motion.div>
-);
-
-const InteractionButton = ({ icon: Icon, count, label }) => (
-    <button className="flex items-center gap-2 text-slate-500 hover:text-emerald-600 transition-colors group">
-        <Icon size={18} className="group-hover:scale-110 transition-transform" />
-        <span className="text-xs font-bold">{count}</span>
-        <span className="text-xs font-medium hidden sm:inline-block opacity-0 group-hover:opacity-100 -ml-2 group-hover:ml-0 transition-all duration-200">{label}</span>
-    </button>
-);
-
-const TrendingItem = ({ topic, count, trend, rank }) => (
-    <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 cursor-pointer transition-all group border border-transparent hover:border-slate-100">
-        <div className="font-black text-slate-200 text-xs w-4">{rank}</div>
-        <div className="flex-1">
-            <div className="font-bold text-slate-900 text-xs mb-0.5 group-hover:text-[#00a651] transition-colors">{topic}</div>
-            <div className="text-[10px] text-slate-400 font-medium">{count} posts</div>
-        </div>
-        <div className="text-[10px] font-bold text-[#00a651] bg-[#00a651]/10 px-2 py-1 rounded-md border border-[#00a651]/20 group-hover:bg-[#00a651]/20 transition-colors">
-            {trend}
-        </div>
-    </div>
-);
-
-const ProfileWidget = () => (
-    <div className="card relative overflow-hidden group border-0 shadow-lg shadow-slate-200/50">
-        {/* Premium Header Background */}
-        <div className="absolute top-0 left-0 w-full h-32 bg-[#00a651]">
-            {/* Abstract Medical Pattern Overlay */}
-            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }}></div>
-            <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent"></div>
-        </div>
-        
-        <div className="relative z-10 pt-16 px-6 pb-6 text-center">
-            {/* Avatar with Status Ring */}
-            <div className="relative inline-block mb-4">
-                <div className="h-28 w-28 rounded-2xl p-1.5 bg-white shadow-xl rotate-3 group-hover:rotate-0 transition-all duration-500 ease-out">
-                    <img 
-                        src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=2070" 
-                        className="w-full h-full object-cover rounded-xl" 
-                        alt="Profile"
-                    />
-                </div>
-                <div className="absolute -bottom-2 -right-2 bg-[#00a651] text-white p-1.5 rounded-lg shadow-lg border-2 border-white" title="Verified Physician">
-                    <ShieldCheck size={16} strokeWidth={3} />
-                </div>
-            </div>
-
-            {/* Identity */}
-            <h3 className="font-bold text-xl text-slate-900 mb-1">Dr. Sarah Jenkins</h3>
-            <p className="text-xs font-bold text-[#00a651] tracking-widest uppercase mb-6">Neurologist • NYC</p>
+             )}
+            <h3 className="font-bold text-lg text-slate-900 mb-2 leading-tight">{title}</h3>
+            <p className="text-slate-600 text-sm leading-relaxed mb-4">
+                {content}
+            </p>
             
-            {/* Stats Row - Glass Style */}
-            <div className="flex items-center justify-center gap-4 mb-8">
-                <div className="flex-1 bg-slate-50/80 backdrop-blur-sm p-3 rounded-2xl border border-slate-100 hover:border-[#00a651]/30 transition-colors group/stat cursor-pointer">
-                    <div className="text-2xl font-black text-slate-800 group-hover/stat:text-[#00a651] transition-colors">1.2k</div>
-                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Network</div>
+            {image && (
+                <div className="rounded-xl overflow-hidden border border-slate-100 mb-4">
+                    <img src={image} className="w-full object-cover max-h-[400px]" alt="Case attachment" />
                 </div>
-                <div className="flex-1 bg-slate-50/80 backdrop-blur-sm p-3 rounded-2xl border border-slate-100 hover:border-[#00a651]/30 transition-colors group/stat cursor-pointer">
-                    <div className="text-2xl font-black text-slate-800 group-hover/stat:text-[#00a651] transition-colors">98</div>
-                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Impact Score</div>
-                </div>
-            </div>
-            
-            {/* Actions */}
-            <div className="space-y-3">
-                <button className="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg shadow-slate-900/20 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
-                    View Credentials <ArrowRight size={14} />
+            )}
+        </div>
+
+        {/* Footer / Stats */}
+        <div className="px-3 sm:px-5 py-3 border-t border-slate-50 flex items-center justify-between bg-slate-50/50">
+            <div className="flex items-center gap-4 sm:gap-6">
+                <button className="flex items-center gap-1.5 text-slate-500 hover:text-emerald-600 transition-colors group">
+                    <ThumbsUp size={18} className="group-hover:scale-110 transition-transform" />
+                    <span className="text-xs font-bold">{stats.likes}</span>
                 </button>
-                <button className="w-full py-2.5 bg-white text-slate-500 hover:text-slate-900 rounded-xl text-xs font-bold transition-colors border border-transparent hover:border-slate-200">
-                    Edit Profile
+                <button className="flex items-center gap-1.5 text-slate-500 hover:text-sky-600 transition-colors group">
+                    <MessageCircle size={18} className="group-hover:scale-110 transition-transform" />
+                    <span className="text-xs font-bold">{stats.comments}</span>
+                </button>
+                 <button className="flex items-center gap-1.5 text-slate-500 hover:text-indigo-600 transition-colors group">
+                    <FileText size={18} className="group-hover:scale-110 transition-transform" />
+                    <span className="text-xs font-bold">{stats.consults} Consults</span>
                 </button>
             </div>
-        </div>
-    </div>
-);
-
-const TrendingWidget = () => (
-    <div className="card p-6 border-slate-200/60 shadow-sm hover:shadow-md transition-shadow">
-        <div className="flex items-center justify-between mb-6">
-            <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2 uppercase tracking-wider">
-                <div className="p-1.5 bg-[#00a651]/10 text-[#00a651] rounded-lg">
-                    <Activity size={14} strokeWidth={2.5} />
-                </div>
-                Global Intel
-            </h4>
-            <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-full">LIVE</span>
-        </div>
-        
-        <div className="space-y-1">
-            <TrendingItem topic="AI in Diagnostics" count="15.4k" trend="+12%" rank="01" />
-            <TrendingItem topic="Telehealth Regs" count="8.2k" trend="+5%" rank="02" />
-            <TrendingItem topic="CRISPR Tx" count="6.1k" trend="+8%" rank="03" />
-            <TrendingItem topic="Neuroplasticity" count="4.3k" trend="+15%" rank="04" />
-        </div>
-
-        <button className="w-full mt-6 py-3 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:text-[#00a651] hover:border-[#00a651]/30 hover:bg-[#00a651]/5 transition-all flex items-center justify-center gap-2 group">
-            Explore Intelligence Hub 
-            <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
-        </button>
-    </div>
-);
-
-const JobsWidget = () => (
-    <div className="card p-6 border-0 bg-[#00a651] text-white shadow-xl shadow-[#00a651]/20 relative overflow-hidden group">
-        {/* Decorative Background */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
-        <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full blur-2xl -ml-12 -mb-12"></div>
-        
-        <div className="relative z-10">
-            <h4 className="font-bold text-white text-sm mb-6 flex items-center gap-2 uppercase tracking-wider opacity-90">
-                <div className="p-1.5 bg-white/10 rounded-lg backdrop-blur-sm">
-                    <Briefcase size={14} />
-                </div>
-                Featured Roles
-            </h4>
-            
-            <div className="space-y-4">
-                <div className="flex items-start gap-3 group/job cursor-pointer p-2 rounded-xl hover:bg-white/5 transition-colors border border-transparent hover:border-white/10">
-                    <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center text-xl shadow-inner">🏥</div>
-                    <div>
-                        <h5 className="font-bold text-sm text-white leading-tight group-hover/job:text-white transition-colors">Rural Health Fellowship</h5>
-                        <p className="text-xs text-white/70 mt-1 flex items-center gap-1.5">
-                            <span className="w-1 h-1 rounded-full bg-white"></span>
-                            Appalachia Region
-                        </p>
-                    </div>
-                    <div className="ml-auto text-[10px] font-bold text-white bg-white/20 px-2 py-1 rounded border border-white/20">$4k/mo</div>
-                </div>
-                
-                <div className="flex items-start gap-3 group/job cursor-pointer p-2 rounded-xl hover:bg-white/5 transition-colors border border-transparent hover:border-white/10">
-                    <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center text-xl shadow-inner">🏙️</div>
-                    <div>
-                        <h5 className="font-bold text-sm text-white leading-tight group-hover/job:text-white transition-colors">Cardiology Resident</h5>
-                        <p className="text-xs text-white/70 mt-1 flex items-center gap-1.5">
-                            <span className="w-1 h-1 rounded-full bg-white"></span>
-                            Mayo Clinic
-                        </p>
-                    </div>
-                    <div className="ml-auto text-[10px] font-bold text-white bg-white/20 px-2 py-1 rounded border border-white/20">Visa</div>
-                </div>
-            </div>
-
-            <button className="w-full mt-6 bg-white text-[#00a651] hover:bg-slate-50 font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition-all shadow-lg shadow-black/5 flex items-center justify-center gap-2 group/btn">
-                Explore 240+ Jobs
-                <ArrowRight size={14} className="group-hover/btn:translate-x-0.5 transition-transform" />
+            <button className="text-slate-400 hover:text-slate-700">
+                <Share2 size={18} />
             </button>
         </div>
-    </div>
+    </motion.div>
 );
 
 export default Feed;

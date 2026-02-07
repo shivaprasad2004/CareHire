@@ -2,8 +2,10 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Link, Mail, Phone, Download, Building, GraduationCap, Award, CheckCircle, Stethoscope, BookOpen } from 'lucide-react';
 
-const Profile = () => {
+const Profile = ({ user }) => {
   const [showVerification, setShowVerification] = React.useState(false);
+
+  if (!user) return <div>Loading...</div>;
 
   return (
     <div className="max-w-5xl mx-auto py-6 px-4 lg:px-8 space-y-6 pb-24 lg:pb-8">
@@ -20,14 +22,14 @@ const Profile = () => {
             <div className="relative flex flex-col sm:flex-row justify-between items-end -mt-12 sm:-mt-16 mb-6 gap-4">
                 <div className="p-1 bg-white rounded-2xl shadow-sm mx-auto sm:mx-0">
                     <img 
-                        src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=2070" 
+                        src={user.avatarUrl || "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=2070"}
                         className="w-24 h-24 sm:w-32 sm:h-32 rounded-xl object-cover" 
                         alt="Profile"
                     />
                 </div>
                 <div className="flex gap-3 w-full sm:w-auto justify-center sm:justify-end">
                     <button className="btn btn-secondary text-sm flex-1 sm:flex-none justify-center">Message</button>
-                    <button className="btn btn-primary text-sm flex-1 sm:flex-none justify-center">Connect</button>
+                    <button className="btn btn-primary text-sm flex-1 sm:flex-none justify-center">Edit Profile</button>
                 </div>
             </div>
 
@@ -35,7 +37,7 @@ const Profile = () => {
                 <div className="flex flex-col md:flex-row justify-between items-start gap-4">
                     <div className="text-center sm:text-left w-full">
                         <h1 className="text-2xl font-bold text-slate-900 flex items-center justify-center sm:justify-start gap-2 relative">
-                            Dr. Sarah Jenkins, MD
+                            {user.title || 'Dr.'} {user.firstName} {user.lastName}
                             <div 
                                 className="relative cursor-pointer group"
                                 onMouseEnter={() => setShowVerification(true)}
@@ -51,33 +53,33 @@ const Profile = () => {
                                         className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-slate-900 text-white text-xs rounded-lg shadow-xl text-center z-50 pointer-events-none"
                                     >
                                         <div className="font-bold text-emerald-400 mb-0.5">Verified Physician</div>
-                                        <div className="text-slate-300 text-[10px]">NPI: 1234567890</div>
+                                        <div className="text-slate-300 text-[10px]">NPI: {user.npi || '1234567890'}</div>
                                         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-slate-900 rotate-45"></div>
                                     </motion.div>
                                 )}
                                 </AnimatePresence>
                             </div>
                         </h1>
-                        <p className="text-lg text-slate-600 font-medium">Chief of Neurology at Presbyterian Hospital</p>
+                        <p className="text-lg text-slate-600 font-medium">{user.specialty ? `Specialist in ${user.specialty}` : 'Medical Professional'}</p>
                         <p className="text-slate-500 text-sm mt-1 max-w-2xl mx-auto sm:mx-0">
-                            Specializing in neurodegenerative disorders and clinical research. Dedicated to advancing patient care through evidence-based medicine.
+                            {user.bio || 'Passionate about advancing patient care through evidence-based medicine.'}
                         </p>
                     </div>
                     <div className="flex flex-col gap-2 text-slate-500 text-sm w-full sm:w-auto items-center sm:items-end">
                          <div className="flex items-center gap-2">
-                            <Building size={14} /> Presbyterian Hospital
+                            <Building size={14} /> {user.organization || 'Medical Center'}
                          </div>
                          <div className="flex items-center gap-2">
-                            <GraduationCap size={14} /> Harvard Medical School
+                            <GraduationCap size={14} /> {user.education?.[0]?.school || 'Medical School'}
                          </div>
                     </div>
                 </div>
 
                 <div className="flex flex-wrap justify-center sm:justify-start gap-4 sm:gap-6 mt-6 pt-6 border-t border-slate-100">
-                    <ContactItem icon={MapPin} text="New York, NY" />
-                    <ContactItem icon={Link} text="sarahjenkins.md" link />
-                    <ContactItem icon={Mail} text="contact@sarahjenkins.md" />
-                    <ContactItem icon={Phone} text="+1 (555) 123-4567" />
+                    <ContactItem icon={MapPin} text={user.location || "New York, NY"} />
+                    <ContactItem icon={Link} text={`${user.firstName.toLowerCase()}${user.lastName.toLowerCase()}.md`} link />
+                    <ContactItem icon={Mail} text={user.email} />
+                    <ContactItem icon={Phone} text={user.phone || "+1 (555) 123-4567"} />
                 </div>
             </div>
         </div>

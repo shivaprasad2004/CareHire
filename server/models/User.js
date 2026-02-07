@@ -28,7 +28,7 @@ const User = sequelize.define('User', {
     allowNull: false
   },
   role: {
-    type: DataTypes.ENUM('doctor', 'nurse', 'student', 'recruiter', 'admin'),
+    type: DataTypes.ENUM('doctor', 'nurse', 'student', 'recruiter', 'admin', 'organization'),
     defaultValue: 'student'
   },
   specialty: {
@@ -48,6 +48,10 @@ const User = sequelize.define('User', {
     allowNull: true
   },
   avatarUrl: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  coverUrl: {
     type: DataTypes.STRING,
     allowNull: true
   },

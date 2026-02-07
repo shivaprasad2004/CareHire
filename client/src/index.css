@@ -57,7 +57,7 @@
 
   /* Gradient Text - Pure Green */
   .text-gradient {
-    @apply text-[#00a651];
+    @apply text-carehire-600;
   }
 
   /* Skeleton Loader Class */
@@ -84,7 +84,7 @@
   
   /* Primary: Pure Green */
   .btn-primary {
-    @apply bg-[#00a651] text-white hover:bg-[#008f45] hover:shadow-lg hover:shadow-[#00a651]/20 border border-transparent focus:ring-[#00a651]/40;
+    @apply bg-carehire-600 text-white hover:bg-carehire-700 hover:shadow-lg hover:shadow-carehire-600/20 border border-transparent focus:ring-carehire-600/40;
   }
   
   /* Accent: Coral / Alert (New) */

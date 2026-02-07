@@ -1,62 +1,67 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, BookOpen, FileText, Video, Download, Filter, ChevronRight, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const RESOURCES_DATA = [
-  {
-    id: 1,
-    title: "2025 Sepsis Management Guidelines",
-    type: "protocol",
-    category: "Critical Care",
-    author: "International Sepsis Alliance",
-    date: "Jan 15, 2025",
-    downloads: "12.5k",
-    format: "PDF"
-  },
-  {
-    id: 2,
-    title: "Advanced ECG Interpretation Guide",
-    type: "guide",
-    category: "Cardiology",
-    author: "Dr. Sarah Miller",
-    date: "Feb 02, 2025",
-    downloads: "8.2k",
-    format: "Video"
-  },
-  {
-    id: 3,
-    title: "Pediatric Dosage Handbook",
-    type: "reference",
-    category: "Pediatrics",
-    author: "Children's Hospital Research",
-    date: "Dec 10, 2024",
-    downloads: "45k",
-    format: "PDF"
-  },
-  {
-    id: 4,
-    title: "Neurological Exam Techniques",
-    type: "guide",
-    category: "Neurology",
-    author: "Stanford Medicine",
-    date: "Jan 28, 2025",
-    downloads: "5.1k",
-    format: "Article"
-  }
-];
-
 const CATEGORIES = ["All", "Critical Care", "Cardiology", "Pediatrics", "Neurology", "Surgery", "Pharmacology"];
 
-export default function Resources() {
+export default function Resources({ user }) {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [resources, setResources] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const filteredResources = RESOURCES_DATA.filter(item => {
-    const matchesCategory = selectedCategory === "All" || item.category === selectedCategory;
-    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         item.author.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  useEffect(() => {
+    const fetchResources = async () => {
+      setIsLoading(true);
+      try {
+        const token = localStorage.getItem('token');
+        const queryParams = new URLSearchParams();
+        if (selectedCategory !== 'All') queryParams.append('category', selectedCategory);
+        if (searchQuery) queryParams.append('search', searchQuery);
+
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/resources?${queryParams}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            setResources(data.data.resources);
+        }
+      } catch (error) {
+        console.error("Error fetching resources:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    const timeoutId = setTimeout(() => {
+        fetchResources();
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [selectedCategory, searchQuery]);
+
+  const handleDownload = async (id) => {
+      try {
+        const token = localStorage.getItem('token');
+        await fetch(`${import.meta.env.VITE_API_URL}/resources/${id}/download`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        // Optimistically update download count
+        setResources(prev => prev.map(r => r.id === id ? { ...r, downloadCount: (r.downloadCount || 0) + 1 } : r));
+      } catch (error) {
+          console.error("Error incrementing download:", error);
+      }
+  };
+
+  const getIcon = (type) => {
+      switch(type?.toLowerCase()) {
+          case 'video': return <Video size={20} className="text-purple-500" />;
+          case 'protocol': return <FileText size={20} className="text-emerald-500" />;
+          default: return <BookOpen size={20} className="text-blue-500" />;
+      }
+  };
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
@@ -100,50 +105,53 @@ export default function Resources() {
       </div>
 
       {/* Resources Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {filteredResources.map((item) => (
-          <motion.div
-            key={item.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-lg transition-all group cursor-pointer"
-          >
-            <div className="flex justify-between items-start mb-4">
-              <div className={`p-3 rounded-lg ${
-                item.format === 'PDF' ? 'bg-red-50 text-red-600' :
-                item.format === 'Video' ? 'bg-blue-50 text-blue-600' :
-                'bg-emerald-50 text-emerald-600'
-              }`}>
-                {item.format === 'PDF' ? <FileText size={24} /> :
-                 item.format === 'Video' ? <Video size={24} /> :
-                 <BookOpen size={24} />}
-              </div>
-              <button className="text-slate-400 hover:text-amber-400 transition-colors">
-                <Star size={20} />
-              </button>
-            </div>
-
-            <h3 className="font-bold text-slate-900 mb-2 group-hover:text-emerald-600 transition-colors line-clamp-2">
-              {item.title}
-            </h3>
-            
-            <div className="flex items-center text-sm text-slate-500 mb-4 space-x-2">
-              <span>{item.author}</span>
-              <span>•</span>
-              <span>{item.date}</span>
-            </div>
-
-            <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-              <span className="text-xs font-semibold px-2 py-1 rounded bg-slate-100 text-slate-600">
-                {item.category}
-              </span>
-              <button className="flex items-center text-sm font-medium text-emerald-600 hover:text-emerald-700">
-                <Download size={16} className="mr-1" />
-                Download
-              </button>
-            </div>
-          </motion.div>
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {isLoading ? (
+            <div className="col-span-full flex justify-center p-8 text-slate-500">Loading resources...</div>
+        ) : resources.length === 0 ? (
+            <div className="col-span-full flex justify-center p-8 text-slate-500">No resources found matching your criteria.</div>
+        ) : (
+            resources.map(resource => (
+                <motion.div
+                    key={resource.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="card p-4 hover:border-emerald-200 hover:shadow-md transition-all group cursor-pointer"
+                >
+                    <div className="flex items-start justify-between mb-3">
+                        <div className="p-2 bg-slate-50 rounded-lg group-hover:bg-emerald-50 transition-colors">
+                            {getIcon(resource.type)}
+                        </div>
+                        <span className="text-xs font-medium px-2 py-1 bg-slate-100 text-slate-600 rounded-full">
+                            {resource.format || 'PDF'}
+                        </span>
+                    </div>
+                    
+                    <h3 className="font-bold text-slate-900 mb-1 line-clamp-2 group-hover:text-emerald-700 transition-colors">
+                        {resource.title}
+                    </h3>
+                    <p className="text-xs text-slate-500 mb-4">{resource.author}</p>
+                    
+                    <div className="flex items-center justify-between text-xs text-slate-400 border-t border-slate-100 pt-3">
+                        <span className="flex items-center gap-1">
+                            <Download size={14} />
+                            {resource.downloadCount || 0}
+                        </span>
+                        <span>{new Date(resource.createdAt || Date.now()).toLocaleDateString()}</span>
+                    </div>
+                    
+                    <button 
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleDownload(resource.id);
+                        }}
+                        className="w-full mt-3 btn btn-secondary text-xs py-2 group-hover:bg-emerald-600 group-hover:text-white group-hover:border-emerald-600"
+                    >
+                        Download Resource
+                    </button>
+                </motion.div>
+            ))
+        )}
       </div>
     </div>
   );

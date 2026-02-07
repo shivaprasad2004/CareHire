@@ -36,14 +36,53 @@ const mentorsData = [
   }
 ];
 
-const Network = () => {
+const Network = ({ user, onNavigate, setTargetConversationId }) => {
   const [isLoading, setIsLoading] = useState(true);
+  const [mentors, setMentors] = useState([]);
 
   useEffect(() => {
-    // Simulate data fetching
-    const timer = setTimeout(() => setIsLoading(false), 2000);
-    return () => clearTimeout(timer);
-  }, []);
+    const fetchNetwork = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        // Fetch users to populate "Recommended Mentors"
+        // Using a general user fetch for now, ideally this would be a recommendation endpoint
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/users`, {
+             headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to fetch network');
+        
+        const data = await response.json();
+        
+        // Map users to mentor format
+        // Filter out current user if present in the list
+        const mappedMentors = data.data.users
+            .filter(u => u.id !== user?.id)
+            .map(u => ({
+                id: u.id,
+                name: `${u.firstName} ${u.lastName}`,
+                role: u.specialty || 'Healthcare Professional',
+                hospital: u.organization || 'Medical Center',
+                specialty: u.specialty || 'General',
+                school: u.education?.[0]?.school || 'Medical School',
+                image: u.avatarUrl || "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=200&h=200",
+                mutual: Math.floor(Math.random() * 10) // Mock mutual connections
+            }));
+
+        setMentors(mappedMentors);
+      } catch (err) {
+        console.error("Error fetching network:", err);
+        // Fallback to demo data if fetch fails
+        setMentors(mentorsData);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchNetwork();
+  }, [user]);
 
   return (
     <div className="max-w-7xl mx-auto py-6 px-4 lg:px-8 pb-24 lg:pb-8">
@@ -75,8 +114,14 @@ const Network = () => {
                    <SkeletonProfileCard />
                  </>
                ) : (
-                 mentorsData.map((mentor) => (
-                    <ProfileCard key={mentor.id} profile={mentor} type="mentor" />
+                 mentors.map((mentor) => (
+                    <ProfileCard 
+                      key={mentor.id} 
+                      profile={mentor} 
+                      type="mentor" 
+                      onNavigate={onNavigate}
+                      setTargetConversationId={setTargetConversationId}
+                    />
                  ))
                )}
                {/* Explore Card */}
@@ -172,11 +217,58 @@ const StatsCard = ({ label, value, icon: Icon, color }) => (
   </div>
 );
 
-const ProfileCard = ({ profile, type }) => {
-  const [status, setStatus] = useState('connect'); // connect, pending, connected
+const ProfileCard = ({ profile, type, onNavigate, setTargetConversationId }) => {
+  const [status, setStatus] = useState('connect'); // connect, pending, connected, error
+  const [loading, setLoading] = useState(false);
 
-  const handleConnect = () => {
-    setStatus('pending');
+  const handleConnect = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/connections/request`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ recipientId: profile.id })
+      });
+
+      if (response.ok) {
+        setStatus('pending');
+      } else {
+        console.error('Failed to send connection request');
+        // Optionally handle error state
+      }
+    } catch (error) {
+      console.error('Error sending connection request:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMessage = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/messages/conversations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ recipientId: profile.id })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setTargetConversationId(data.data.conversation.id);
+        onNavigate('messages');
+      } else {
+        console.error('Failed to start conversation');
+      }
+    } catch (error) {
+      console.error('Error starting conversation:', error);
+    }
   };
 
   return (
@@ -209,16 +301,16 @@ const ProfileCard = ({ profile, type }) => {
        <div className="mt-4 pt-4 border-t border-slate-100 flex gap-2">
           <button 
             onClick={handleConnect}
-            disabled={status === 'pending'}
+            disabled={status === 'pending' || loading}
             className={`flex-1 btn py-1.5 text-xs ${
               status === 'pending' 
                 ? 'bg-slate-100 text-slate-500 cursor-default' 
                 : 'btn-primary'
             }`}
           >
-            {status === 'pending' ? 'Pending' : 'Connect'}
+            {loading ? 'Sending...' : status === 'pending' ? 'Pending' : 'Connect'}
           </button>
-          <button className="btn btn-secondary px-3 py-1.5">
+          <button onClick={handleMessage} className="btn btn-secondary px-3 py-1.5">
              <MessageSquare size={14} />
           </button>
        </div>

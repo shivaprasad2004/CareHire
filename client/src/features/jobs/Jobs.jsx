@@ -83,16 +83,51 @@ const subSectors = [
 const Jobs = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
+  const [jobs, setJobs] = useState([]);
 
   useEffect(() => {
-    // Simulate data fetching
-    const timer = setTimeout(() => setIsLoading(false), 2000);
-    return () => clearTimeout(timer);
+    const fetchJobs = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/jobs`);
+        if (!response.ok) throw new Error('Failed to fetch jobs');
+        const data = await response.json();
+        
+        // Map API data to UI format
+        const mappedJobs = data.data.jobs.map(job => ({
+          id: job.id,
+          hospital: job.recruiter?.organization || 'Unknown Hospital',
+          location: job.location,
+          role: job.title,
+          type: job.type,
+          salary: job.salaryRange || 'Competitive',
+          tags: job.requirements ? job.requirements.slice(0, 2) : [], // Use first 2 requirements as tags for now
+          match: 90, // Mocked match percentage
+          logo: job.recruiter?.avatarUrl || "https://images.unsplash.com/photo-1632833239869-a37e3a5806d2?auto=format&fit=crop&q=80&w=200&h=200",
+          requirements: job.requirements || [],
+          scope: "urban" // Mocked scope for now, or derive from location
+        }));
+
+        // If no jobs in DB, fallback to demo data
+        if (mappedJobs.length === 0) {
+           setJobs(jobsData);
+        } else {
+           setJobs(mappedJobs);
+        }
+      } catch (err) {
+        console.error("Error fetching jobs:", err);
+        // Fallback to demo data on error
+        setJobs(jobsData);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchJobs();
   }, []);
 
   const filteredJobs = activeTab === 'all' 
-    ? jobsData 
-    : jobsData.filter(job => job.scope === activeTab);
+    ? jobs 
+    : jobs.filter(job => job.scope === activeTab);
 
   return (
     <div className="max-w-7xl mx-auto py-6 px-4 lg:px-8 pb-24 lg:pb-8">

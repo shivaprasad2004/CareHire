@@ -7,6 +7,8 @@ const { sendMessageSchema } = require('../validators/message.validator');
 
 router.use(protect);
 
+router.get('/', messageController.getConversations);
+router.post('/conversations', messageController.startConversation);
 router.post('/', validate(sendMessageSchema), messageController.sendMessage);
 router.get('/:conversationId', messageController.getMessages);
 router.patch('/:messageId/read', messageController.markAsRead);

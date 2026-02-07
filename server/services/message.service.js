@@ -3,6 +3,115 @@ const { getIO } = require('../sockets');
 const AppError = require('../utils/AppError');
 
 class MessageService {
+  async getUserConversations(userId) {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw new AppError('User not found', 404);
+    }
+
+    const conversations = await user.getConversations({
+      include: [
+        {
+          model: User,
+          as: 'participants',
+          attributes: ['id', 'firstName', 'lastName', 'avatarUrl', 'specialty', 'status'],
+          through: { attributes: [] }
+        },
+        {
+          model: Message,
+          as: 'messages',
+          limit: 1,
+          order: [['createdAt', 'DESC']]
+        }
+      ],
+      order: [['lastMessageAt', 'DESC']]
+    });
+
+    return conversations;
+  }
+
+  async getOrCreateConversation(userId, recipientId) {
+    if (userId === recipientId) {
+      throw new AppError('Cannot create conversation with yourself', 400);
+    }
+
+    const recipient = await User.findByPk(recipientId);
+    if (!recipient) {
+      throw new AppError('Recipient not found', 404);
+    }
+
+    // Find existing conversation
+    // This query is a bit complex because we need to find a conversation where BOTH users are participants.
+    // We can do this by finding all conversations of user 1, then filtering for user 2.
+    // Or doing a raw query or using Sequelize operators on the join table.
+    
+    // Approach: Get all conversation IDs for user 1
+    const userConversations = await Conversation.findAll({
+      include: [{
+        model: User,
+        as: 'participants',
+        where: { id: userId },
+        attributes: []
+      }]
+    });
+    
+    const conversationIds = userConversations.map(c => c.id);
+    
+    // Now check if any of these have recipient as participant
+    const existingConversation = await Conversation.findOne({
+      where: {
+        id: conversationIds
+      },
+      include: [{
+        model: User,
+        as: 'participants',
+        where: { id: recipientId }
+      }]
+    });
+
+    if (existingConversation) {
+      // Return full conversation details expected by frontend
+      return await Conversation.findByPk(existingConversation.id, {
+        include: [
+          {
+            model: User,
+          as: 'participants',
+          attributes: ['id', 'firstName', 'lastName', 'avatarUrl', 'specialty', 'status'],
+          through: { attributes: [] }
+        },
+          {
+            model: Message,
+            as: 'messages',
+            limit: 1,
+            order: [['createdAt', 'DESC']]
+          }
+        ]
+      });
+    }
+
+    // Create new conversation
+    const newConversation = await Conversation.create({});
+    await newConversation.addParticipants([userId, recipientId]);
+
+    // Return the new conversation with participants loaded
+    return await Conversation.findByPk(newConversation.id, {
+      include: [
+        {
+          model: User,
+          as: 'participants',
+          attributes: ['id', 'firstName', 'lastName', 'avatarUrl', 'specialty', 'status'],
+          through: { attributes: [] }
+        },
+        {
+          model: Message,
+          as: 'messages',
+          limit: 1,
+          order: [['createdAt', 'DESC']]
+        }
+      ]
+    });
+  }
+
   async sendMessage(senderId, conversationId, content) {
     const conversation = await Conversation.findByPk(conversationId);
     if (!conversation) {
@@ -21,10 +130,6 @@ class MessageService {
     const fullMessage = await Message.findByPk(message.id, {
       include: [{ model: User, as: 'sender', attributes: ['id', 'firstName', 'lastName', 'avatarUrl'] }]
     });
-
-const logger = require('../utils/logger');
-
-// ...
 
     // Real-time emission
     try {

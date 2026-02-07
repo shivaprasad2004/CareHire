@@ -7,7 +7,8 @@ import {
   FileText,
   ChevronRight,
   ChevronLeft,
-  X
+  X,
+  LogOut
 } from 'lucide-react';
 import Logo, { LogoText } from '../ui/Logo';
 import { motion } from 'framer-motion';
@@ -19,7 +20,8 @@ const Sidebar = ({
   mobileOpen = false, 
   toggleSidebar, 
   isMobile,
-  closeMobileMenu
+  closeMobileMenu,
+  onLogout
 }) => {
   
   const navItems = [
@@ -119,20 +121,31 @@ const Sidebar = ({
 
       {/* User Profile Snippet */}
       <div className="p-4 border-t border-slate-100">
-        <div 
-          onClick={() => onNavigate('profile')}
-          className={`flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer ${collapsed && !isMobile ? 'justify-center' : ''}`}
-        >
-          <div className="h-10 w-10 rounded-full bg-slate-200 overflow-hidden shrink-0 border-2 border-white shadow-sm">
-             <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=2070" className="h-full w-full object-cover" alt="User" />
-          </div>
-          {(!collapsed || isMobile) && (
-            <div className="flex-1 min-w-0">
-              <h4 className="font-bold text-sm text-slate-900 truncate">Dr. Sarah Jenkins</h4>
-              <p className="text-xs text-slate-500 truncate">Neurologist</p>
+        <div className="flex items-center gap-2">
+            <div 
+            onClick={() => onNavigate('profile')}
+            className={`flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer flex-1 ${collapsed && !isMobile ? 'justify-center' : ''}`}
+            >
+            <div className="h-10 w-10 rounded-full bg-slate-200 overflow-hidden shrink-0 border-2 border-white shadow-sm">
+                <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=2070" className="h-full w-full object-cover" alt="User" />
             </div>
-          )}
-          {(!collapsed || isMobile) && <ChevronRight size={16} className="text-slate-400" />}
+            {(!collapsed || isMobile) && (
+                <div className="flex-1 min-w-0">
+                <h4 className="font-bold text-sm text-slate-900 truncate">Dr. Sarah Jenkins</h4>
+                <p className="text-xs text-slate-500 truncate">Neurologist</p>
+                </div>
+            )}
+            </div>
+
+            {(!collapsed || isMobile) && (
+                <button 
+                    onClick={onLogout}
+                    className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                    title="Logout"
+                >
+                    <LogOut size={20} />
+                </button>
+            )}
         </div>
       </div>
 
