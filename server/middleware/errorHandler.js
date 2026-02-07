@@ -23,9 +23,11 @@ const errorHandler = (err, req, res, next) => {
     } else {
       // Programming or other unknown error: don't leak error details
       logger.error(`ERROR 💥: ${err}`);
+      // TEMPORARY DEBUG: Expose error message to frontend
       res.status(500).json({
         status: 'error',
-        message: 'Something went very wrong!'
+        message: `Something went very wrong! Error: ${err.message}`,
+        stack: err.stack // Optional: include stack if you really need it
       });
     }
   }
