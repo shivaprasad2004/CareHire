@@ -60,6 +60,22 @@ app.get('/', (req, res) => {
   res.json({ message: 'CareHire API is running...' });
 });
 
+// Test Endpoint for JSON Verification
+app.get('/api/test', (req, res) => {
+  res.status(200).json({ 
+    status: 'success', 
+    message: 'Backend is serving JSON correctly',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// 404 Handler - Must come after all routes but before Global Error Handler
+app.use((req, res, next) => {
+  const error = new Error(`Not Found - ${req.originalUrl}`);
+  error.statusCode = 404;
+  next(error);
+});
+
 // Global Error Handler
 app.use(errorHandler);
 

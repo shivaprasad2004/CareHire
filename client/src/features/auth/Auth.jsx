@@ -45,13 +45,14 @@ const Auth = ({ onLogin, onBack }) => {
         body: JSON.stringify(body)
       });
 
-      const contentType = response.headers.get("content-type");
       let data;
-      if (contentType && contentType.indexOf("application/json") !== -1) {
+      try {
         data = await response.json();
-      } else {
-        const text = await response.text();
-        console.error("Non-JSON response:", text);
+      } catch (parseError) {
+        console.error("Invalid JSON response:", parseError);
+        // If it's not JSON, try to get the text to see what happened (e.g. 404 HTML)
+        const text = await response.text().catch(() => "No response body");
+        console.error("Server returned non-JSON:", text);
         throw new Error("Server returned an invalid response (not JSON). Please check the API configuration.");
       }
 
