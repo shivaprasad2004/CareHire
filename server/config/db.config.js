@@ -3,8 +3,8 @@ require('dotenv').config();
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-// Render provides a connection string in DATABASE_URL for Postgres
-const sequelize = process.env.DATABASE_URL
+// Use local MySQL for development, PostgreSQL for production
+const sequelize = isProduction && process.env.DATABASE_URL
   ? new Sequelize(process.env.DATABASE_URL, {
       dialect: 'postgres',
       protocol: 'postgres',

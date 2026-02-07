@@ -108,18 +108,31 @@ const logger = require('./utils/logger'); // Import logger
 // ... imports ...
 
 // Database Connection & Server Start
-db.sequelize.sync({ alter: true }) // Use alter: true to update tables without dropping
-  .then(() => {
-    logger.info('Database synced successfully.');
-    // Log Environment Checks
-    logger.info(`Environment: NODE_ENV=${process.env.NODE_ENV}, PORT=${PORT}`);
-    logger.info(`JWT_SECRET Present: ${!!process.env.JWT_SECRET}`);
-    logger.info(`DATABASE_URL Present: ${!!process.env.DATABASE_URL}`);
-    
-    server.listen(PORT, () => {
-      logger.info(`Server is running on port ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    logger.error(`Failed to sync database: ${err.message}`);
+const skipDbSync = process.env.SKIP_DB_SYNC === 'true';
+
+if (skipDbSync) {
+  logger.info('Skipping database sync (SKIP_DB_SYNC=true)');
+  logger.info(`Environment: NODE_ENV=${process.env.NODE_ENV}, PORT=${PORT}`);
+  logger.info(`JWT_SECRET Present: ${!!process.env.JWT_SECRET}`);
+  logger.info(`DATABASE_URL Present: ${!!process.env.DATABASE_URL}`);
+  
+  server.listen(PORT, () => {
+    logger.info(`Server is running on port ${PORT} (without database sync)`);
   });
+} else {
+  db.sequelize.sync({ alter: true }) // Use alter: true to update tables without dropping
+    .then(() => {
+      logger.info('Database synced successfully.');
+      // Log Environment Checks
+      logger.info(`Environment: NODE_ENV=${process.env.NODE_ENV}, PORT=${PORT}`);
+      logger.info(`JWT_SECRET Present: ${!!process.env.JWT_SECRET}`);
+      logger.info(`DATABASE_URL Present: ${!!process.env.DATABASE_URL}`);
+      
+      server.listen(PORT, () => {
+        logger.info(`Server is running on port ${PORT}`);
+      });
+    })
+    .catch((err) => {
+      logger.error(`Failed to sync database: ${err.message}`);
+    });
+}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Plus } from 'lucide-react';
+import storyService from '../../services/storyService';
 
 const UrgentCases = () => {
   const [stories, setStories] = useState([]);
@@ -9,14 +10,9 @@ const UrgentCases = () => {
   useEffect(() => {
     const fetchStories = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(getApiUrl('/stories'), {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            
-            if (response.ok) {
-                const data = await response.json();
-                setStories(data.data.stories);
+            const response = await storyService.getAllStories();
+            if (response.data && response.data.stories) {
+                setStories(response.data.stories);
             }
         } catch (error) {
             console.error("Error fetching stories:", error);

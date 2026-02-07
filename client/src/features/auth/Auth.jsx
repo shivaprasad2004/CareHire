@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Lock, User, ArrowRight, Loader2, ArrowLeft } from 'lucide-react';
-import { getApiUrl } from '../../config/api';
+import authService from '../../services/authService';
 
 const Auth = ({ onLogin, onBack }) => {
   const [isLogin, setIsLogin] = useState(true);
@@ -25,47 +25,26 @@ const Auth = ({ onLogin, onBack }) => {
     setIsLoading(true);
     setError('');
 
-    const endpoint = isLogin ? '/auth/login' : '/auth/register';
-    const url = getApiUrl(endpoint);
-
     try {
-      const body = isLogin 
-        ? { email: formData.email, password: formData.password }
-        : { 
+      let response;
+      if (isLogin) {
+        response = await authService.login({ 
+          email: formData.email, 
+          password: formData.password 
+        });
+      } else {
+        response = await authService.register({ 
             firstName: formData.firstName, 
             lastName: formData.lastName, 
             email: formData.email, 
             password: formData.password,
             passwordConfirm: formData.confirmPassword
-          };
-
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-
-      let data;
-      try {
-        data = await response.json();
-      } catch (parseError) {
-        console.error("Invalid JSON response:", parseError);
-        // If it's not JSON, try to get the text to see what happened (e.g. 404 HTML)
-        const text = await response.text().catch(() => "No response body");
-        console.error("Server returned non-JSON:", text);
-        throw new Error("Server returned an invalid response (not JSON). Please check the API configuration.");
-      }
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Authentication failed');
+        });
       }
 
       // Success
-      const token = data.token;
-      const user = data.data.user;
-      
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      const token = response.token;
+      const user = response.data.user;
       
       onLogin(user, token);
       
