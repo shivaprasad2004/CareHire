@@ -21,7 +21,7 @@ router.get('/diagnose', async (req, res) => {
       NODE_ENV: process.env.NODE_ENV,
       PORT: process.env.PORT,
       DATABASE_URL: process.env.DATABASE_URL ? 'Set (Hidden)' : 'Missing',
-      JWT_SECRET: process.env.JWT_SECRET ? 'Set (Hidden)' : 'Missing',
+      JWT_SECRET: process.env.JWT_SECRET ? 'Set (Hidden)' : 'Using Fallback (Action Required)',
       CLIENT_URL: process.env.CLIENT_URL,
     };
 
