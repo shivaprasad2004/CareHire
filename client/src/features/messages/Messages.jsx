@@ -16,9 +16,7 @@ export default function Messages({ user, targetConversationId, setTargetConversa
   // Initialize socket
   useEffect(() => {
     if (user && !socketRef.current) {
-        const socketUrl = import.meta.env.VITE_API_URL 
-            ? import.meta.env.VITE_API_URL.replace('/api', '') 
-            : 'http://localhost:5000';
+        const socketUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
             
         socketRef.current = io(socketUrl, {
             auth: {
