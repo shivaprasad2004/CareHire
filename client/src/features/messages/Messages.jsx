@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, MoreVertical, Phone, Video, Image, Paperclip, Send, Check, CheckCheck, ChevronLeft } from 'lucide-react';
 import { io } from 'socket.io-client';
+import { API_BASE_URL, getApiUrl } from '../../config/api';
 
 export default function Messages({ user, targetConversationId, setTargetConversationId }) {
   const [conversations, setConversations] = useState([]);
@@ -16,9 +17,7 @@ export default function Messages({ user, targetConversationId, setTargetConversa
   // Initialize socket
   useEffect(() => {
     if (user && !socketRef.current) {
-        const socketUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-            
-        socketRef.current = io(socketUrl, {
+        socketRef.current = io(API_BASE_URL, {
             auth: {
                 token: localStorage.getItem('token')
             }
@@ -46,7 +45,7 @@ export default function Messages({ user, targetConversationId, setTargetConversa
     const fetchConversations = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/messages`, {
+            const response = await fetch(getApiUrl('/messages'), {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
@@ -155,24 +154,41 @@ export default function Messages({ user, targetConversationId, setTargetConversa
     e.preventDefault();
     if (!messageInput.trim() || !selectedConversation) return;
 
+    // Optimistic UI update
+    const tempId = Date.now();
+    const newMessage = {
+        id: tempId,
+        content: messageInput,
+        senderId: user.id,
+        conversationId: selectedConversation.id,
+        createdAt: new Date().toISOString(),
+        sender: { ...user }
+    };
+
+    setMessages(prev => [...prev, newMessage]);
+    setMessageInput("");
+    setTimeout(scrollToBottom, 100);
+
+    // Emit socket event
+    socketRef.current?.emit('send_message', {
+        conversationId: selectedConversation.id,
+        content: newMessage.content
+    });
+
+    // Also save to DB via API for persistence (redundancy or primary)
     try {
         const token = localStorage.getItem('token');
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/messages`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    conversationId: activeConversation.id,
-                    content: newMessage
-                })
-            });
-
-        if (response.ok) {
-            setMessageInput("");
-            // Message will be added via socket event
-        }
+        await fetch(getApiUrl('/messages'), {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                conversationId: selectedConversation.id,
+                content: newMessage.content
+            })
+        });
     } catch (error) {
         console.error("Error sending message:", error);
     }

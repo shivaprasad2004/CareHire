@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Search, Bell, HelpCircle, X, Menu, Check, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { io } from 'socket.io-client';
+import { API_BASE_URL, getApiUrl } from '../../config/api';
 
 const Header = ({ activePage, toggleSidebar, isMobile, onLogout }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -14,9 +15,7 @@ const Header = ({ activePage, toggleSidebar, isMobile, onLogout }) => {
     const token = localStorage.getItem('token');
     if (token) {
         // Initialize Socket
-        const socketUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-            
-        socketRef.current = io(socketUrl, {
+        socketRef.current = io(API_BASE_URL, {
             auth: { token }
         });
 
@@ -26,7 +25,7 @@ const Header = ({ activePage, toggleSidebar, isMobile, onLogout }) => {
         });
         
         // Fetch initial notifications
-        fetch(`${import.meta.env.VITE_API_URL}/api/notifications`, {
+        fetch(getApiUrl('/notifications'), {
             headers: { 'Authorization': `Bearer ${token}` }
         })
         .then(res => res.json())
@@ -47,7 +46,7 @@ const Header = ({ activePage, toggleSidebar, isMobile, onLogout }) => {
   const handleMarkAsRead = async (id) => {
     try {
         const token = localStorage.getItem('token');
-        await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/${id}/read`, {
+        await fetch(getApiUrl(`/notifications/${id}/read`), {
             method: 'PATCH',
             headers: { 'Authorization': `Bearer ${token}` }
         });

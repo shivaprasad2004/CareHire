@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from '../../config/api';
 import { motion } from 'framer-motion';
 import { MoreHorizontal, MessageCircle, Share2, ThumbsUp, Bookmark, Activity, ArrowRight, ShieldCheck, FileText, Clock, Briefcase } from 'lucide-react';
 import SmartRounds from './SmartRounds';
@@ -16,7 +17,7 @@ const Feed = ({ user }) => {
     const fetchPosts = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts`, {
+        const response = await fetch(getApiUrl('/posts'), {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -55,6 +56,26 @@ const Feed = ({ user }) => {
 
     fetchPosts();
   }, []);
+
+  const handleLike = async (postId) => {
+    try {
+      const token = localStorage.getItem('token');
+      await fetch(getApiUrl(`/posts/${postId}/like`), {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      setPosts(currentPosts => 
+        currentPosts.map(post => 
+          post.id === postId 
+            ? { ...post, stats: { ...post.stats, likes: post.stats.likes + 1 } }
+            : post
+        )
+      );
+    } catch (err) {
+      console.error("Error liking post:", err);
+    }
+  };
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 max-w-7xl mx-auto py-6 px-4 lg:px-8 pb-24 lg:pb-8">

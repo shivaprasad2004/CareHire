@@ -46,7 +46,7 @@ const Network = ({ user, onNavigate, setTargetConversationId }) => {
         const token = localStorage.getItem('token');
         // Fetch users to populate "Recommended Mentors"
         // Using a general user fetch for now, ideally this would be a recommendation endpoint
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/users`, {
+        const response = await fetch(getApiUrl('/users'), {
              headers: {
                 'Authorization': `Bearer ${token}`
             }

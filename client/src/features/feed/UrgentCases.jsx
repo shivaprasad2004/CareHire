@@ -10,7 +10,7 @@ const UrgentCases = () => {
     const fetchStories = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/stories`, {
+            const response = await fetch(getApiUrl('/stories'), {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             

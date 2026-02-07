@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, BookOpen, FileText, Video, Download, Filter, ChevronRight, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { getApiUrl } from '../../config/api';
 
 const CATEGORIES = ["All", "Critical Care", "Cardiology", "Pediatrics", "Neurology", "Surgery", "Pharmacology"];
 
@@ -19,7 +20,7 @@ export default function Resources({ user }) {
         if (selectedCategory !== 'All') queryParams.append('category', selectedCategory);
         if (searchQuery) queryParams.append('search', searchQuery);
 
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/resources?${queryParams}`, {
+        const response = await fetch(getApiUrl(`/resources?${queryParams}`), {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         
@@ -44,7 +45,7 @@ export default function Resources({ user }) {
   const handleDownload = async (id) => {
       try {
         const token = localStorage.getItem('token');
-        await fetch(`${import.meta.env.VITE_API_URL}/api/resources/${id}/download`, {
+        await fetch(getApiUrl(`/resources/${id}/download`), {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` }
         });

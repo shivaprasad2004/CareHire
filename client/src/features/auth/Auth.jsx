@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Lock, User, ArrowRight, Loader2, ArrowLeft } from 'lucide-react';
+import { getApiUrl } from '../../config/api';
 
 const Auth = ({ onLogin, onBack }) => {
   const [isLogin, setIsLogin] = useState(true);
@@ -44,7 +45,15 @@ const Auth = ({ onLogin, onBack }) => {
         body: JSON.stringify(body)
       });
 
-      const data = await response.json();
+      const contentType = response.headers.get("content-type");
+      let data;
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        console.error("Non-JSON response:", text);
+        throw new Error("Server returned an invalid response (not JSON). Please check the API configuration.");
+      }
 
       if (!response.ok) {
         throw new Error(data.message || 'Authentication failed');

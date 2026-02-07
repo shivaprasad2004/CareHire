@@ -88,7 +88,7 @@ const Jobs = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/jobs`);
+        const response = await fetch(getApiUrl('/jobs'));
         if (!response.ok) throw new Error('Failed to fetch jobs');
         const data = await response.json();
         

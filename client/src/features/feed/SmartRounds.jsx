@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Clock, AlertCircle, FileText, Stethoscope, ChevronRight, Sparkles } from 'lucide-react';
+import { getApiUrl } from '../../config/api';
 
 const RoundCard = ({ item }) => {
     const Icon = item.icon || Stethoscope;
@@ -58,7 +59,7 @@ const SmartRounds = () => {
     const fetchRounds = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/rounds`, {
+            const response = await fetch(getApiUrl('/rounds'), {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             
