@@ -3,8 +3,8 @@ require('dotenv').config();
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-// Use local MySQL for development, PostgreSQL for production
-const sequelize = isProduction && process.env.DATABASE_URL
+// Use DATABASE_URL if available (supports both prod and dev remote DBs)
+const sequelize = process.env.DATABASE_URL
   ? new Sequelize(process.env.DATABASE_URL, {
       dialect: 'postgres',
       protocol: 'postgres',
@@ -12,7 +12,7 @@ const sequelize = isProduction && process.env.DATABASE_URL
       dialectOptions: {
         ssl: {
           require: true,
-          rejectUnauthorized: false // Required for Render
+          rejectUnauthorized: false // Required for Supabase/Render
         }
       }
     })

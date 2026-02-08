@@ -57,8 +57,9 @@ const Auth = ({ onLogin, onBack }) => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden relative">
+    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-between p-4">
+      <div className="flex-1 flex items-center justify-center w-full">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden relative">
         {onBack && (
           <button 
             onClick={onBack} 
@@ -195,7 +196,8 @@ const Auth = ({ onLogin, onBack }) => {
           </div>
         </div>
       </div>
-      <div className="mt-8 text-center text-sm text-slate-500">
+      </div>
+      <div className="mt-8 text-center text-sm text-slate-500 pb-4">
         <p>
           By continuing, you agree to CareHire's{' '}
           <a href="#" className="text-sky-600 hover:text-sky-700 font-medium">Terms of Service</a>
