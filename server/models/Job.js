@@ -39,6 +39,51 @@ const Job = sequelize.define('Job', {
   status: {
     type: DataTypes.ENUM('Open', 'Closed', 'Filled'),
     defaultValue: 'Open'
+  },
+  // Enhanced fields
+  organizationId: {
+    type: DataTypes.UUID,
+    allowNull: true
+  },
+  experienceLevel: {
+    type: DataTypes.ENUM('Entry', 'Mid', 'Senior', 'Director', 'Executive'),
+    allowNull: true
+  },
+  workplaceType: {
+    type: DataTypes.ENUM('On-site', 'Remote', 'Hybrid'),
+    defaultValue: 'On-site'
+  },
+  applicantsCount: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  },
+  viewsCount: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  },
+  skills: {
+    type: DataTypes.JSON,
+    defaultValue: []
+  },
+  benefits: {
+    type: DataTypes.JSON,
+    defaultValue: []
+  },
+  deadline: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  isActive: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true
+  },
+  department: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  specialtyRequired: {
+    type: DataTypes.STRING,
+    allowNull: true
   }
 }, {
   timestamps: true,
@@ -46,7 +91,8 @@ const Job = sequelize.define('Job', {
     { fields: ['recruiterId'] },
     { fields: ['type'] },
     { fields: ['location'] },
-    { fields: ['status'] }
+    { fields: ['status'] },
+    { fields: ['organizationId'] }
   ]
 });
 

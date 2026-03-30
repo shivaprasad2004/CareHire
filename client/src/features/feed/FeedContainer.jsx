@@ -1,54 +1,26 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PostCard from './components/PostCard';
-import FeedHeader from './components/FeedHeader';
 import CreatePostWidget from './components/CreatePostWidget';
-import SmartRounds from './SmartRounds';
-import UrgentCases from './UrgentCases';
+import CreatePostModal from './components/CreatePostModal';
 import ProfileWidget from './ProfileWidget';
 import TrendingWidget from './TrendingWidget';
 import JobsWidget from './JobsWidget';
 import { postService } from '../../services/postService';
-import withAuth from '../../hoc/withAuth.jsx';
-import withLoading from '../../hoc/withLoading.jsx';
-import Feed from './Feed';
+import useAuthStore from '../../stores/authStore';
 
 const FeedContainer = ({ user }) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const fetchPosts = useCallback(async () => {
     try {
       setLoading(true);
-      setError(null);
-      
       const response = await postService.getAllPosts();
-      
-      const data = response;
-      
-      // Map API data to UI format
-      const mappedPosts = data.data.posts.map(post => ({
-        id: post.id,
-        author: `${post.author.firstName} ${post.author.lastName}`,
-        role: post.author.specialty || 'Healthcare Professional',
-        org: 'Medical Center',
-        time: new Date(post.createdAt).toLocaleDateString(),
-        title: post.type === 'UrgentCase' ? 'Urgent Case' : (post.type === 'SmartRound' ? 'Smart Round' : 'Medical Update'),
-        content: post.content,
-        category: post.type || 'General',
-        image: post.mediaUrl,
-        stats: { 
-          likes: post.likesCount || 0, 
-          comments: post.commentsCount || 0, 
-          consults: 0 
-        },
-        verified: false
-      }));
-
-      setPosts(mappedPosts);
+      const postsData = response?.data?.posts || response?.data || [];
+      setPosts(Array.isArray(postsData) ? postsData : []);
     } catch (err) {
-      setError(err.message);
-      console.error("Error fetching posts:", err);
+      console.error('Error fetching posts:', err);
     } finally {
       setLoading(false);
     }
@@ -58,93 +30,93 @@ const FeedContainer = ({ user }) => {
     fetchPosts();
   }, [fetchPosts]);
 
-  const handleLike = useCallback(async (postId) => {
-    try {
-      await postService.likePost(postId);
-      
-      setPosts(currentPosts => 
-        currentPosts.map(post => 
-          post.id === postId 
-            ? { ...post, stats: { ...post.stats, likes: post.stats.likes + 1 } }
-            : post
-        )
-      );
-    } catch (err) {
-      console.error("Error liking post:", err);
+  const handlePostCreated = (newPost) => {
+    if (newPost) {
+      newPost.author = newPost.author || {
+        id: user?.id,
+        firstName: user?.firstName,
+        lastName: user?.lastName,
+        avatarUrl: user?.avatarUrl,
+        headline: user?.headline,
+        specialty: user?.specialty,
+      };
+      setPosts(prev => [newPost, ...prev]);
     }
-  }, []);
+  };
 
-  const handleCreatePost = useCallback(() => {
-    // Implement create post logic
-    console.log('Create post clicked');
-  }, []);
+  const handleDeletePost = async (postId) => {
+    try {
+      await postService.deletePost?.(postId);
+      setPosts(prev => prev.filter(p => p.id !== postId));
+    } catch (err) {
+      console.error('Error deleting post:', err);
+    }
+  };
 
-  const handleShare = useCallback((postId) => {
-    // Implement share logic
-    console.log('Share post:', postId);
-  }, []);
-
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 max-w-7xl mx-auto py-6 px-4 lg:px-8 pb-24 lg:pb-8">
-      
-      {/* Main Feed Column */}
-      <div className="flex-1 min-w-0">
-        
-        {/* Mobile Profile Header (Visible only on small screens) */}
-        <FeedHeader user={user} />
+    <div className="flex flex-col lg:flex-row gap-6 max-w-7xl mx-auto pb-24 lg:pb-8">
+      {/* Main Feed */}
+      <div className="flex-1 min-w-0 space-y-4">
+        <CreatePostWidget user={user} onCreatePost={() => setShowCreateModal(true)} />
 
-        {/* Urgent Cases (Stories) - NEW FEATURE */}
-        <UrgentCases />
-
-        {/* Smart Rounds Triage - "Something New" */}
-        <SmartRounds />
-
-        {/* Spacer */}
-        <div className="h-6"></div>
-
-        {/* Create Post Widget - Redesigned */}
-        <CreatePostWidget user={user} onCreatePost={handleCreatePost} />
-
-        {/* Posts - "Medical Case Cards" */}
-        <div className="space-y-6">
-          {posts.map(post => (
-            <PostCard 
-              key={post.id}
-              post={post}
-              onLike={handleLike}
-              onShare={handleShare}
-            />
-          ))}
-        </div>
-
-        {/* Mobile Widgets (Visible on small screens) */}
-        <div className="lg:hidden mt-8 space-y-6">
-          <ProfileWidget user={user} />
-          <TrendingWidget />
-          <JobsWidget />
-        </div>
-
+        {loading ? (
+          <div className="space-y-4">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="card p-6 space-y-4 animate-pulse">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-slate-200 dark:bg-slate-700" />
+                  <div className="space-y-2 flex-1">
+                    <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-32" />
+                    <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded w-48" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-full" />
+                  <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-3/4" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : posts.length === 0 ? (
+          <div className="card p-12 text-center">
+            <div className="text-4xl mb-4">📝</div>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">No posts yet</h3>
+            <p className="text-sm text-slate-500 mb-4">Be the first to share something with the community!</p>
+            <button onClick={() => setShowCreateModal(true)} className="btn btn-primary">
+              Create a post
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {posts.map(post => (
+              <PostCard
+                key={post.id}
+                post={post}
+                onDelete={handleDeletePost}
+                onRefresh={fetchPosts}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Right Sidebar (Widgets) - Refined */}
-      <div className="hidden lg:block w-80 space-y-6">
+      {/* Right Sidebar */}
+      <div className="hidden lg:block w-80 space-y-4 shrink-0">
         <ProfileWidget user={user} />
         <TrendingWidget />
         <JobsWidget />
       </div>
+
+      {/* Create Post Modal */}
+      <CreatePostModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onPostCreated={handlePostCreated}
+      />
     </div>
   );
 };
 
-export default withAuth(
-  withLoading(FeedContainer, {
-    loadingDelay: 300,
-    loadingMessage: 'Loading your feed...',
-    errorMessage: 'Failed to load feed',
-    retryButton: true
-  })
-);
+export default FeedContainer;

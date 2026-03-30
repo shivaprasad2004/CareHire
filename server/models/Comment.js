@@ -18,12 +18,25 @@ const Comment = sequelize.define('Comment', {
   content: {
     type: DataTypes.TEXT,
     allowNull: false
+  },
+  parentId: {
+    type: DataTypes.UUID,
+    allowNull: true
+  },
+  likesCount: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  },
+  mediaUrl: {
+    type: DataTypes.STRING,
+    allowNull: true
   }
 }, {
   timestamps: true,
   indexes: [
     { fields: ['postId'] },
-    { fields: ['authorId'] }
+    { fields: ['authorId'] },
+    { fields: ['parentId'] }
   ]
 });
 

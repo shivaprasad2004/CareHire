@@ -1,60 +1,48 @@
 import React from 'react';
-import { 
-  LayoutGrid, 
-  Users, 
-  MessageSquare, 
-  Briefcase, 
-  FileText 
-} from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Home, Users, Briefcase, MessageSquare, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const BottomNav = ({ activePage, onNavigate }) => {
-  
+const BottomNav = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const activePage = location.pathname.split('/')[1] || 'feed';
+
   const navItems = [
-    { id: 'dashboard', label: 'Home', icon: LayoutGrid },
-    { id: 'network', label: 'Network', icon: Users },
-    { id: 'jobs', label: 'Jobs', icon: Briefcase, badge: 'NEW' },
-    { id: 'messages', label: 'Messages', icon: MessageSquare, badge: 3 },
-    { id: 'resources', label: 'Resources', icon: FileText },
+    { id: 'feed', label: 'Home', icon: Home, path: '/feed' },
+    { id: 'network', label: 'Network', icon: Users, path: '/network' },
+    { id: 'jobs', label: 'Jobs', icon: Briefcase, path: '/jobs' },
+    { id: 'messaging', label: 'Messages', icon: MessageSquare, path: '/messaging' },
+    { id: 'in', label: 'Me', icon: User, path: '/in/me' },
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 min-h-[4rem] bg-white/90 backdrop-blur-xl border-t border-slate-200 z-50 lg:hidden pb-safe">
+    <div className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 z-50 lg:hidden shadow-nav pb-safe">
       <div className="flex items-center justify-around h-16 px-2">
         {navItems.map((item) => {
-          const isActive = activePage === item.id;
+          const isActive = activePage === item.id || location.pathname.startsWith(item.path);
           return (
             <button
               key={item.id}
-              onClick={() => onNavigate(item.id)}
-              className="relative flex flex-col items-center justify-center w-full h-full space-y-1 group"
+              onClick={() => navigate(item.path)}
+              className="relative flex flex-col items-center justify-center w-full h-full group"
             >
               <div className={`relative p-1.5 rounded-xl transition-all duration-300 ${
-                isActive ? 'bg-[#00a651] text-white shadow-lg shadow-[#00a651]/20 -translate-y-1' : 'text-slate-400 group-hover:text-[#00a651]'
+                isActive
+                  ? 'bg-carehire-600 text-white shadow-lg shadow-carehire-600/30 -translate-y-0.5'
+                  : 'text-slate-400 group-hover:text-carehire-600 dark:group-hover:text-carehire-400'
               }`}>
                 <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
-                
-                {/* Badge */}
-                {item.badge && (
-                  <span className={`absolute -top-1 -right-1 flex items-center justify-center min-w-[14px] h-[14px] text-[9px] font-bold text-white rounded-full ring-2 ring-white ${
-                    item.badge === 'NEW' ? 'bg-[#00a651]' : 'bg-rose-500'
-                  }`}>
-                    {item.badge === 'NEW' ? 'N' : item.badge}
-                  </span>
-                )}
               </div>
-              
-              <span className={`text-[10px] font-medium transition-colors ${
-                isActive ? 'text-[#00a651]' : 'text-slate-400'
+              <span className={`text-[10px] mt-0.5 font-medium transition-colors ${
+                isActive ? 'text-carehire-600 dark:text-carehire-400' : 'text-slate-400'
               }`}>
                 {item.label}
               </span>
-
-              {/* Active Indicator Dot */}
               {isActive && (
-                <motion.div 
+                <motion.div
                   layoutId="bottomNavIndicator"
-                  className="absolute bottom-1 w-1 h-1 bg-[#00a651] rounded-full"
+                  className="absolute bottom-1 w-1 h-1 bg-carehire-600 rounded-full"
                 />
               )}
             </button>

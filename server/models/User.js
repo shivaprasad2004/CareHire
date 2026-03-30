@@ -90,12 +90,87 @@ const User = sequelize.define('User', {
   status: {
     type: DataTypes.ENUM('online', 'offline', 'busy'),
     defaultValue: 'offline'
+  },
+  // Enhanced LinkedIn-like fields
+  slug: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    unique: true
+  },
+  headline: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  pronouns: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  profileViews: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  },
+  searchAppearances: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  },
+  openToWork: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  openToHire: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  coverLetter: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  certifications: {
+    type: DataTypes.TEXT, // JSON string
+    allowNull: true
+  },
+  licenses: {
+    type: DataTypes.TEXT, // JSON string
+    allowNull: true
+  },
+  volunteer: {
+    type: DataTypes.TEXT, // JSON string
+    allowNull: true
+  },
+  publications: {
+    type: DataTypes.TEXT, // JSON string
+    allowNull: true
+  },
+  followersCount: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  },
+  followingCount: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  },
+  connectionsCount: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  },
+  profileVisibility: {
+    type: DataTypes.ENUM('public', 'connections', 'private'),
+    defaultValue: 'public'
+  },
+  emailNotifications: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true
+  },
+  pushNotifications: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true
   }
 }, {
   timestamps: true,
   indexes: [
     { fields: ['email'] },
-    { fields: ['role'] }
+    { fields: ['role'] },
+    { fields: ['slug'] }
   ]
 });
 

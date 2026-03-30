@@ -21,6 +21,10 @@ const resourceRoutes = require('./routes/resourceRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const applicationRoutes = require('./routes/applicationRoutes');
+const organizationRoutes = require('./routes/organizationRoutes');
+const searchRoutes = require('./routes/searchRoutes');
+const endorsementRoutes = require('./routes/endorsementRoutes');
+const settingsRoutes = require('./routes/settingsRoutes');
 const debugRoutes = require('./routes/debugRoutes');
 const errorHandler = require('./middleware/errorHandler');
 
@@ -77,6 +81,10 @@ app.use('/api/resources', resourceRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/applications', applicationRoutes);
+app.use('/api/organizations', organizationRoutes);
+app.use('/api/search', searchRoutes);
+app.use('/api/users', endorsementRoutes);
+app.use('/api/settings', settingsRoutes);
 app.use('/api/debug', debugRoutes);
 
 // Health Check

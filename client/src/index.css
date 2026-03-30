@@ -2,26 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+   CAREHIRE DESIGN SYSTEM - Premium Medical UI
+   ============================================ */
+
 @layer base {
   html, body {
     @apply overflow-x-hidden;
   }
-  
+
+  /* Light Mode */
   body {
-    /* "Clinical Aurora" Background - Calm medical green theme */
     @apply bg-[#F3FBF7] text-slate-900 antialiased;
     font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
-    background-image: 
-      radial-gradient(circle at 15% 50%, rgba(16, 185, 129, 0.10), transparent 25%), 
+    background-image:
+      radial-gradient(circle at 15% 50%, rgba(16, 185, 129, 0.10), transparent 25%),
       radial-gradient(circle at 85% 30%, rgba(45, 212, 191, 0.08), transparent 25%);
     background-attachment: fixed;
     animation: aurora-breath 15s ease-in-out infinite alternate;
   }
-  
+
+  /* Dark Mode */
+  .dark body,
+  .dark {
+    @apply bg-slate-950 text-slate-100;
+    background-image:
+      radial-gradient(circle at 15% 50%, rgba(16, 185, 129, 0.05), transparent 25%),
+      radial-gradient(circle at 85% 30%, rgba(45, 212, 191, 0.03), transparent 25%);
+  }
+
   h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tight font-bold text-slate-900;
+    @apply tracking-tight font-bold text-slate-900 dark:text-white;
+  }
+
+  /* Dark mode input styling */
+  .dark input, .dark textarea, .dark select {
+    @apply bg-slate-800 border-slate-700 text-white placeholder:text-slate-500;
   }
 }
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
 
 @keyframes aurora-breath {
   0% { background-position: 0% 0%; background-size: 100% 100%; }
@@ -33,96 +55,184 @@
   100% { transform: translateX(100%); }
 }
 
-@layer components {
-  /* Layout Primitives */
-  .layout-container {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
-  }
-
-  /* Card Styles - "Neo-Clinical" */
-  /* Higher contrast borders, softer shadows, pure white */
-  .card {
-    @apply bg-white rounded-2xl border border-slate-200/60 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.04),0_1px_4px_-1px_rgba(0,0,0,0.02)] transition-all duration-300;
-  }
-  
-  /* The "Lift" effect for interactive cards */
-  .card-hover {
-    @apply hover:translate-y-[-2px] hover:shadow-[0_12px_20px_-8px_rgba(0,0,0,0.08),0_4px_12px_-4px_rgba(0,0,0,0.04)] hover:border-emerald-500/20;
-  }
-
-  /* Glassmorphism Level 3 - Ultra Premium */
-  .glass-panel {
-    @apply bg-white/80 backdrop-blur-xl border border-white/60 shadow-[0_8px_32px_0_rgba(31,38,135,0.05)];
-  }
-
-  /* Gradient Text - Pure Green */
-  .text-gradient {
-    @apply text-carehire-600;
-  }
-
-  /* Skeleton Loader Class */
-  .skeleton {
-    @apply relative overflow-hidden bg-slate-100 rounded-lg;
-  }
-  .skeleton::after {
-    content: "";
-    @apply absolute inset-0 -translate-x-full;
-    background-image: linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0) 0,
-      rgba(255, 255, 255, 0.4) 20%,
-      rgba(255, 255, 255, 0.7) 60%,
-      rgba(255, 255, 255, 0)
-    );
-    animation: shimmer 2s infinite;
-  }
-
-  /* Buttons - Updated for "Pure Green" Palette */
-  .btn {
-    @apply inline-flex items-center justify-center px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98];
-  }
-  
-  /* Primary: Pure Green */
-  .btn-primary {
-    @apply bg-carehire-600 text-white hover:bg-carehire-700 hover:shadow-lg hover:shadow-carehire-600/20 border border-transparent focus:ring-carehire-600/40;
-  }
-  
-  /* Accent: Coral / Alert (New) */
-  .btn-accent {
-    @apply bg-[#F43F5E] text-white hover:bg-[#E11D48] shadow-md shadow-rose-500/20 border border-transparent;
-  }
-  
-  .btn-secondary {
-    @apply bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 hover:border-slate-300 shadow-sm;
-  }
-  
-  .btn-ghost {
-    @apply text-slate-600 hover:bg-slate-100/80 hover:text-slate-900;
-  }
-
-  /* Inputs - Cleaner, more space */
-  .input {
-    @apply block w-full rounded-xl border-slate-200 bg-slate-50/50 px-4 py-3 text-base placeholder:text-slate-400 focus:bg-white focus:border-emerald-500 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all duration-200;
-  }
-  
-  /* Status Indicators */
-  .status-dot {
-    @apply h-2.5 w-2.5 rounded-full ring-2 ring-white;
-  }
-}
-
-/* Floating Action Button Animation */
 @keyframes float-pulse {
   0% { transform: translateY(0px); box-shadow: 0 5px 15px 0px rgba(0,0,0,0.1); }
   50% { transform: translateY(-5px); box-shadow: 0 15px 15px 0px rgba(0,0,0,0.15); }
   100% { transform: translateY(0px); box-shadow: 0 5px 15px 0px rgba(0,0,0,0.1); }
 }
 
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ============================================
+   COMPONENT LAYER
+   ============================================ */
+
+@layer components {
+  /* Layout */
+  .layout-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* ---- CARDS ---- */
+  .card {
+    @apply bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-card transition-all duration-300;
+  }
+
+  .card-hover {
+    @apply hover:translate-y-[-2px] hover:shadow-card-hover hover:border-carehire-500/20 dark:hover:border-carehire-500/30;
+  }
+
+  .card-interactive {
+    @apply card card-hover cursor-pointer;
+  }
+
+  /* ---- GLASS PANELS ---- */
+  .glass-panel {
+    @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/60 dark:border-slate-800/60 shadow-[0_8px_32px_0_rgba(31,38,135,0.05)];
+  }
+
+  .glass-header {
+    @apply bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-b border-slate-200/70 dark:border-slate-800/70;
+  }
+
+  /* ---- TEXT GRADIENTS ---- */
+  .text-gradient {
+    @apply bg-gradient-to-r from-carehire-600 to-teal-500 bg-clip-text text-transparent;
+  }
+
+  .text-gradient-warm {
+    @apply bg-gradient-to-r from-amber-500 to-rose-500 bg-clip-text text-transparent;
+  }
+
+  /* ---- SKELETON LOADER ---- */
+  .skeleton {
+    @apply relative overflow-hidden bg-slate-100 dark:bg-slate-800 rounded-lg;
+  }
+  .skeleton::after {
+    content: "";
+    @apply absolute inset-0 -translate-x-full;
+    background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.7) 60%, rgba(255,255,255,0));
+    animation: shimmer 2s infinite;
+  }
+  .dark .skeleton::after {
+    background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.05) 20%, rgba(255,255,255,0.1) 60%, rgba(255,255,255,0));
+  }
+
+  /* ---- BUTTONS ---- */
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98];
+  }
+
+  .btn-primary {
+    @apply bg-carehire-600 text-white hover:bg-carehire-700 hover:shadow-lg hover:shadow-carehire-600/20 border border-transparent focus:ring-carehire-600/40;
+  }
+
+  .btn-gradient {
+    @apply bg-gradient-to-r from-carehire-600 to-teal-500 text-white hover:shadow-lg hover:shadow-carehire-600/30 border border-transparent focus:ring-carehire-600/40;
+  }
+
+  .btn-accent {
+    @apply bg-[#F43F5E] text-white hover:bg-[#E11D48] shadow-md shadow-rose-500/20 border border-transparent;
+  }
+
+  .btn-secondary {
+    @apply bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-300 shadow-sm;
+  }
+
+  .btn-ghost {
+    @apply text-slate-600 dark:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white;
+  }
+
+  .btn-outline {
+    @apply border-2 border-carehire-600 text-carehire-600 hover:bg-carehire-50 dark:hover:bg-carehire-950;
+  }
+
+  .btn-danger {
+    @apply bg-red-600 text-white hover:bg-red-700 border border-transparent focus:ring-red-600/40;
+  }
+
+  /* ---- INPUTS ---- */
+  .input {
+    @apply block w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-4 py-3 text-base text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:border-carehire-500 focus:outline-none focus:ring-4 focus:ring-carehire-500/10 transition-all duration-200;
+  }
+
+  .input-sm {
+    @apply input px-3 py-2 text-sm rounded-lg;
+  }
+
+  /* ---- STATUS INDICATORS ---- */
+  .status-dot {
+    @apply h-2.5 w-2.5 rounded-full ring-2 ring-white dark:ring-slate-900;
+  }
+
+  .status-online { @apply bg-green-500; }
+  .status-offline { @apply bg-slate-300; }
+  .status-busy { @apply bg-red-500; }
+
+  /* ---- DIVIDERS ---- */
+  .divider {
+    @apply border-t border-slate-100 dark:border-slate-800;
+  }
+
+  /* ---- LINKS ---- */
+  .link {
+    @apply text-carehire-600 hover:text-carehire-700 font-medium transition-colors;
+  }
+
+  /* ---- TOOLTIPS ---- */
+  .tooltip {
+    @apply absolute z-50 px-2 py-1 text-xs font-medium text-white bg-slate-900 dark:bg-slate-100 dark:text-slate-900 rounded-lg shadow-lg pointer-events-none;
+  }
+
+  /* ---- DROPDOWN MENU ---- */
+  .dropdown-menu {
+    @apply absolute z-50 bg-white dark:bg-slate-900 rounded-xl shadow-dropdown border border-slate-200/80 dark:border-slate-700 overflow-hidden min-w-[200px];
+  }
+
+  .dropdown-item {
+    @apply flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer;
+  }
+
+  .dropdown-item-danger {
+    @apply dropdown-item text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30;
+  }
+
+  /* ---- TAGS / CHIPS ---- */
+  .tag {
+    @apply inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300;
+  }
+
+  .tag-primary {
+    @apply tag bg-carehire-50 dark:bg-carehire-900/30 text-carehire-700 dark:text-carehire-400;
+  }
+
+  /* ---- OPEN TO WORK BANNER ---- */
+  .open-to-work-ring {
+    @apply ring-4 ring-green-500/30;
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.3);
+  }
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+/* Floating Action Button Animation */
 .animate-float {
   animation: float-pulse 4s ease-in-out infinite;
 }
 
-/* Custom Scrollbar - Refined */
+/* Gradient Background Animation */
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -131,10 +241,10 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-200/80 rounded-full hover:bg-slate-300 transition-colors;
+  @apply bg-slate-200/80 dark:bg-slate-700/80 rounded-full hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors;
 }
 
-/* Hide scrollbar for "Smart Rounds" horizontal scroll */
+/* Hide scrollbar */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -151,16 +261,47 @@
   padding-top: env(safe-area-inset-top, 0px);
 }
 
-/* Utilities */
+/* Mask Image Gradient */
 .mask-image-gradient {
   mask-image: linear-gradient(to right, black 85%, transparent 100%);
   -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
 }
 
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
+/* Line Clamp Utilities */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ============================================
+   PROSE STYLES (for articles/rich content)
+   ============================================ */
+.prose-carehire {
+  @apply text-slate-700 dark:text-slate-300 leading-relaxed;
+}
+.prose-carehire h1, .prose-carehire h2, .prose-carehire h3 {
+  @apply text-slate-900 dark:text-white mt-8 mb-4;
+}
+.prose-carehire p {
+  @apply mb-4;
+}
+.prose-carehire a {
+  @apply text-carehire-600 hover:underline;
+}
+.prose-carehire ul, .prose-carehire ol {
+  @apply pl-6 mb-4 space-y-2;
+}
+.prose-carehire blockquote {
+  @apply border-l-4 border-carehire-500 pl-4 italic text-slate-500 dark:text-slate-400;
+}
+.prose-carehire code {
+  @apply bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-sm;
 }

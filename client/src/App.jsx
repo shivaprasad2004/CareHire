@@ -1,230 +1,229 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Toaster } from 'react-hot-toast';
+import useAuthStore from './stores/authStore';
+import useUiStore from './stores/uiStore';
+
+// Layout Components
 import Sidebar from './components/layout/Sidebar';
 import BottomNav from './components/layout/BottomNav';
 import Header from './components/layout/Header';
+import FAB from './components/ui/FAB';
+import NotFound from './components/ui/NotFound';
+import ErrorBoundary from './components/ui/ErrorBoundary';
+
+// Core Pages (eager loaded)
 import Feed from './features/feed/Feed';
-import Profile from './features/profile/Profile';
-import Jobs from './features/jobs/Jobs';
-import Network from './features/network/Network';
-import Resources from './features/resources/Resources';
-import Messages from './features/messages/Messages';
 import Auth from './features/auth/Auth';
 import LandingPage from './features/landing/LandingPage';
-import ArticlesPage from './features/articles/ArticlesPage';
-import ArticleReader from './features/articles/ArticleReader';
-import FAB from './components/ui/FAB';
-import { AnimatePresence, motion } from 'framer-motion';
+
+// Lazy loaded pages
+const Profile = lazy(() => import('./features/profile/Profile'));
+const PublicProfile = lazy(() => import('./features/profile/PublicProfile'));
+const Jobs = lazy(() => import('./features/jobs/Jobs'));
+const JobDetail = lazy(() => import('./features/jobs/JobDetail'));
+const PostJob = lazy(() => import('./features/jobs/PostJob'));
+const SavedJobs = lazy(() => import('./features/jobs/SavedJobs'));
+const AppliedJobs = lazy(() => import('./features/jobs/AppliedJobs'));
+const ManageApplicants = lazy(() => import('./features/jobs/ManageApplicants'));
+const Network = lazy(() => import('./features/network/Network'));
+const Resources = lazy(() => import('./features/resources/Resources'));
+const Messages = lazy(() => import('./features/messages/Messages'));
+const ArticlesPage = lazy(() => import('./features/articles/ArticlesPage'));
+const ArticleReader = lazy(() => import('./features/articles/ArticleReader'));
+const OrganizationPage = lazy(() => import('./features/organization/OrganizationPage'));
+const CreateOrganization = lazy(() => import('./features/organization/CreateOrganization'));
+const OrgAdmin = lazy(() => import('./features/organization/OrgAdmin'));
+const PostDetail = lazy(() => import('./features/feed/PostDetail'));
+const SearchPage = lazy(() => import('./features/search/SearchPage'));
+const Settings = lazy(() => import('./features/settings/Settings'));
+const NotificationsPage = lazy(() => import('./features/notifications/NotificationsPage'));
+
+// Loading fallback
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-[60vh]">
+    <div className="flex flex-col items-center gap-4">
+      <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-carehire-600 to-teal-500 animate-pulse-soft" />
+      <div className="text-sm text-slate-400 font-medium">Loading...</div>
+    </div>
+  </div>
+);
+
+// Page transition wrapper
+const PageTransition = ({ children }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 8 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -8 }}
+    transition={{ duration: 0.2, ease: 'easeOut' }}
+  >
+    {children}
+  </motion.div>
+);
 
 function App() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [user, setUser] = useState(null);
+  const { user, login, logout } = useAuthStore();
+  const { isMobile, setIsMobile, sidebarCollapsed, toggleSidebar, theme } = useUiStore();
   const [isLoadingUser, setIsLoadingUser] = useState(true);
-  const [targetConversationId, setTargetConversationId] = useState(null);
 
-  // Derive activePage from URL for highlighting navigation
-  // e.g. /dashboard -> dashboard, /messages -> messages
-  const activePage = location.pathname.split('/')[1] || 'dashboard';
-
-  // Check for logged in user
+  // Initialize theme
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
-    if (token && storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+  }, []);
+
+  // Load user on mount
+  useEffect(() => {
     setIsLoadingUser(false);
   }, []);
 
-  // Handle screen resize to determine if we are on mobile
+  // Handle resize
   useEffect(() => {
     const handleResize = () => {
-      // Consider < 1024px as "Mobile/Tablet" mode where Sidebar is hidden
-      // and BottomNav is shown
       const mobile = window.innerWidth < 1024;
       setIsMobile(mobile);
-      if (mobile) {
-        setIsSidebarCollapsed(false);
-      }
     };
-
-    // Initial check
     handleResize();
-
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const toggleSidebar = () => {
-    setIsSidebarCollapsed(!isSidebarCollapsed);
-  };
+  }, [setIsMobile]);
 
   const handleLogin = (userData, token) => {
-    setUser(userData);
-    navigate('/dashboard');
+    login(userData, token);
+    navigate('/feed');
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setUser(null);
-    setTargetConversationId(null);
+    logout();
     navigate('/');
   };
 
-  const handleNavigate = (page) => {
-    navigate(`/${page}`);
-  };
-
   if (isLoadingUser) {
-    return <div className="min-h-screen flex items-center justify-center bg-slate-50">Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-carehire-600 to-teal-500 animate-pulse-soft" />
+          <span className="text-sm text-slate-400 font-medium">Loading CareHire...</span>
+        </div>
+      </div>
+    );
   }
 
   // Unauthenticated Routes
   if (!user) {
     return (
-      <Routes>
-        <Route path="/" element={
-          <LandingPage 
-            onLoginClick={() => navigate('/login')} 
-            onJoinClick={() => navigate('/login')} 
-          />
-        } />
-        <Route path="/login" element={
-          <Auth onLogin={handleLogin} onBack={() => navigate('/')} />
-        } />
-        <Route path="/articles" element={<ArticlesPage />} />
-        <Route path="/articles/:topic" element={<ArticlesPage />} />
-        <Route path="/article/:id" element={<ArticleReader />} />
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
+      <>
+        <Toaster position="top-right" toastOptions={{ className: 'dark:bg-slate-800 dark:text-white' }} />
+        <Routes>
+          <Route path="/" element={<LandingPage onLoginClick={() => navigate('/login')} onJoinClick={() => navigate('/login')} />} />
+          <Route path="/login" element={<Auth onLogin={handleLogin} onBack={() => navigate('/')} />} />
+          <Route path="/signup" element={<Auth onLogin={handleLogin} onBack={() => navigate('/')} defaultTab="register" />} />
+          <Route path="/articles" element={<Suspense fallback={<PageLoader />}><ArticlesPage /></Suspense>} />
+          <Route path="/articles/:topic" element={<Suspense fallback={<PageLoader />}><ArticlesPage /></Suspense>} />
+          <Route path="/article/:id" element={<Suspense fallback={<PageLoader />}><ArticleReader /></Suspense>} />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </>
     );
   }
 
-  // Authenticated Routes & Layout
+  // Authenticated Routes
   return (
-    <div className="flex min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-sky-500/20 selection:text-sky-900 overflow-x-hidden">
-      
-      {/* Desktop Sidebar Navigation (Hidden on Mobile) */}
+    <div className="flex min-h-screen bg-[#F3FBF7] dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 selection:bg-carehire-500/20 overflow-x-hidden">
+      <Toaster position="top-right" toastOptions={{ className: 'dark:bg-slate-800 dark:text-white' }} />
+
+      {/* Desktop Sidebar */}
       <div className="hidden lg:block">
-        <Sidebar 
-          activePage={activePage} 
-          onNavigate={handleNavigate}
-          collapsed={isSidebarCollapsed}
+        <Sidebar
+          collapsed={sidebarCollapsed}
           toggleSidebar={toggleSidebar}
           isMobile={false}
           onLogout={handleLogout}
         />
       </div>
 
-      {/* Main Content Area */}
-      <main 
-        className={`flex-1 transition-all duration-300 relative pb-20 lg:pb-0 ${
-          isMobile 
-            ? 'ml-0' 
-            : isSidebarCollapsed ? 'ml-20' : 'ml-[280px]'
-        }`}
-      >
-        
-          {/* Header */}
-          <Header 
-            activePage={activePage} 
-            toggleSidebar={toggleSidebar}
-            isMobile={isMobile}
-            onLogout={handleLogout}
-          />
+      {/* Main Content */}
+      <main className={`flex-1 transition-all duration-300 relative pb-20 lg:pb-0 ${
+        isMobile ? 'ml-0' : sidebarCollapsed ? 'ml-[72px]' : 'ml-[280px]'
+      }`}>
+        <Header onLogout={handleLogout} />
 
-        {/* Dynamic Content */}
-        <div className="pt-20 lg:pt-24 px-4 lg:px-8 w-full min-h-screen">
+        <div className="pt-4 px-4 lg:px-8 w-full min-h-screen max-w-7xl mx-auto">
+          <ErrorBoundary>
           <AnimatePresence mode="wait">
-            {/* Wrap Routes in a motion.div is tricky because Routes renders the component. 
-                Instead, we can wrap the element inside each Route, or use useLocation key on Routes?
-                Actually, wrapping Routes in AnimatePresence doesn't work directly for page transitions.
-                We need to wrap the outlet or the rendered component.
-                Let's use a wrapper component for page transitions.
-            */}
-            <Routes location={location} key={location.pathname}>
-              <Route path="/" element={<Navigate to="/dashboard" />} />
-              
-              <Route path="/dashboard" element={
-                <PageTransition>
-                  <Feed user={user} />
-                </PageTransition>
-              } />
-              
-              <Route path="/network" element={
-                <PageTransition>
-                  <Network user={user} onNavigate={handleNavigate} setTargetConversationId={setTargetConversationId} />
-                </PageTransition>
-              } />
-              
-              <Route path="/jobs" element={
-                <PageTransition>
-                  <Jobs user={user} />
-                </PageTransition>
-              } />
-              
-              <Route path="/profile" element={
-                <PageTransition>
-                  <Profile user={user} onUpdateUser={(updatedUser) => {
-                    setUser(updatedUser);
-                    localStorage.setItem('user', JSON.stringify(updatedUser));
-                  }} />
-                </PageTransition>
-              } />
-              
-              <Route path="/resources" element={
-                <PageTransition>
-                  <Resources user={user} />
-                </PageTransition>
-              } />
-              
-              <Route path="/messages" element={
-                <PageTransition>
-                  <Messages user={user} targetConversationId={targetConversationId} setTargetConversationId={setTargetConversationId} />
-                </PageTransition>
-              } />
-              
-              <Route path="*" element={
-                <PageTransition>
-                  <div className="flex items-center justify-center h-[60vh] text-slate-400">
-                    <div className="text-center">
-                      <h2 className="text-2xl font-bold text-slate-900 mb-2 capitalize">{activePage}</h2>
-                      <p>This module is currently under development.</p>
-                    </div>
-                  </div>
-                </PageTransition>
-              } />
-            </Routes>
+            <Suspense fallback={<PageLoader />}>
+              <Routes location={location} key={location.pathname}>
+                {/* Redirects */}
+                <Route path="/" element={<Navigate to="/feed" />} />
+                <Route path="/dashboard" element={<Navigate to="/feed" />} />
+
+                {/* Feed */}
+                <Route path="/feed" element={<PageTransition><Feed user={user} /></PageTransition>} />
+                <Route path="/post/:postId" element={<PageTransition><PostDetail /></PageTransition>} />
+
+                {/* Profile */}
+                <Route path="/profile" element={<Navigate to="/in/me" />} />
+                <Route path="/in/me" element={<PageTransition><Profile user={user} onUpdateUser={(u) => useAuthStore.getState().updateUser(u)} /></PageTransition>} />
+                <Route path="/in/:userId" element={<PageTransition><PublicProfile /></PageTransition>} />
+
+                {/* Network */}
+                <Route path="/network" element={<PageTransition><Network user={user} /></PageTransition>} />
+                <Route path="/network/invitations" element={<PageTransition><Network user={user} defaultTab="invitations" /></PageTransition>} />
+
+                {/* Jobs */}
+                <Route path="/jobs" element={<PageTransition><Jobs user={user} /></PageTransition>} />
+                <Route path="/jobs/:jobId" element={<PageTransition><JobDetail /></PageTransition>} />
+                <Route path="/jobs/post" element={<PageTransition><PostJob /></PageTransition>} />
+                <Route path="/jobs/saved" element={<PageTransition><SavedJobs /></PageTransition>} />
+                <Route path="/jobs/applied" element={<PageTransition><AppliedJobs /></PageTransition>} />
+                <Route path="/jobs/manage/:jobId" element={<PageTransition><ManageApplicants /></PageTransition>} />
+
+                {/* Messages */}
+                <Route path="/messaging" element={<PageTransition><Messages user={user} /></PageTransition>} />
+                <Route path="/messaging/:conversationId" element={<PageTransition><Messages user={user} /></PageTransition>} />
+
+                {/* Organizations */}
+                <Route path="/organization/new" element={<PageTransition><CreateOrganization /></PageTransition>} />
+                <Route path="/organization/:slug" element={<PageTransition><OrganizationPage /></PageTransition>} />
+                <Route path="/organization/:slug/admin" element={<PageTransition><OrgAdmin /></PageTransition>} />
+
+                {/* Search */}
+                <Route path="/search" element={<PageTransition><SearchPage /></PageTransition>} />
+
+                {/* Notifications */}
+                <Route path="/notifications" element={<PageTransition><NotificationsPage /></PageTransition>} />
+
+                {/* Settings */}
+                <Route path="/settings" element={<PageTransition><Settings /></PageTransition>} />
+                <Route path="/settings/:section" element={<PageTransition><Settings /></PageTransition>} />
+
+                {/* Resources & Articles */}
+                <Route path="/resources" element={<PageTransition><Resources user={user} /></PageTransition>} />
+                <Route path="/articles" element={<PageTransition><ArticlesPage /></PageTransition>} />
+                <Route path="/articles/:topic" element={<PageTransition><ArticlesPage /></PageTransition>} />
+                <Route path="/article/:id" element={<PageTransition><ArticleReader /></PageTransition>} />
+
+                {/* 404 */}
+                <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
+              </Routes>
+            </Suspense>
           </AnimatePresence>
+          </ErrorBoundary>
         </div>
       </main>
-      
-      {/* Mobile Bottom Navigation */}
+
+      {/* Mobile Bottom Nav */}
       {isMobile && (
         <>
           <FAB />
-          <BottomNav activePage={activePage} onNavigate={handleNavigate} />
+          <BottomNav />
         </>
       )}
-
     </div>
   );
 }
-
-// Helper component for page transitions
-const PageTransition = ({ children }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 10 }}
-    animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: -10 }}
-    transition={{ duration: 0.2 }}
-  >
-    {children}
-  </motion.div>
-);
 
 export default App;

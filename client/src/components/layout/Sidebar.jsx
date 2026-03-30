@@ -1,164 +1,191 @@
 import React from 'react';
-import { 
-  LayoutGrid, 
-  Users, 
-  MessageSquare, 
-  Briefcase,
-  FileText,
-  ChevronRight,
-  ChevronLeft,
-  X,
-  LogOut
+import { useNavigate, useLocation } from 'react-router-dom';
+import {
+  LayoutGrid, Users, MessageSquare, Briefcase, FileText,
+  ChevronRight, ChevronLeft, X, LogOut, BookOpen,
+  Settings, Bell
 } from 'lucide-react';
-import Logo, { LogoText } from '../ui/Logo';
 import { motion } from 'framer-motion';
+import Avatar from '../ui/Avatar';
+import ProgressBar from '../ui/ProgressBar';
+import useAuthStore from '../../stores/authStore';
 
-const Sidebar = ({ 
-  activePage, 
-  onNavigate, 
-  collapsed = false, 
-  mobileOpen = false, 
-  toggleSidebar, 
-  isMobile,
-  closeMobileMenu,
-  onLogout
-}) => {
-  
+const Sidebar = ({ collapsed = false, mobileOpen = false, toggleSidebar, isMobile, closeMobileMenu, onLogout }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const user = useAuthStore(s => s.user);
+  const activePage = location.pathname.split('/')[1] || 'feed';
+
   const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutGrid },
-    { id: 'network', label: 'My Network', icon: Users },
-    { id: 'jobs', label: 'Find Jobs', icon: Briefcase, badge: 'NEW' },
-    { id: 'messages', label: 'Messages', icon: MessageSquare, badge: 3 },
-    { id: 'resources', label: 'Resources', icon: FileText },
+    { id: 'feed', label: 'Home', icon: LayoutGrid, path: '/feed' },
+    { id: 'network', label: 'My Network', icon: Users, path: '/network' },
+    { id: 'jobs', label: 'Jobs', icon: Briefcase, path: '/jobs', badge: 'NEW' },
+    { id: 'messaging', label: 'Messages', icon: MessageSquare, path: '/messaging' },
+    { id: 'notifications', label: 'Notifications', icon: Bell, path: '/notifications' },
   ];
 
-  // Determine sidebar variants based on mode
-  const sidebarVariants = isMobile ? {
-    open: { x: 0, width: 280 },
-    closed: { x: "-100%", width: 280 }
-  } : {
-    open: { width: 280, x: 0 },
-    collapsed: { width: 80, x: 0 }
+  const secondaryItems = [
+    { id: 'resources', label: 'Resources', icon: BookOpen, path: '/resources' },
+    { id: 'articles', label: 'Articles', icon: FileText, path: '/articles' },
+    { id: 'settings', label: 'Settings', icon: Settings, path: '/settings' },
+  ];
+
+  const handleNavigate = (path) => {
+    navigate(path);
+    if (isMobile && closeMobileMenu) closeMobileMenu();
   };
 
+  const sidebarVariants = isMobile ? {
+    open: { x: 0, width: 300 },
+    closed: { x: '-100%', width: 300 }
+  } : {
+    open: { width: 280, x: 0 },
+    collapsed: { width: 72, x: 0 }
+  };
+
+  const profileStrength = user ? [user.avatarUrl, user.bio, user.skills, user.experience, user.education].filter(Boolean).length * 20 : 0;
+
   return (
-    <motion.aside 
-      initial={isMobile ? "closed" : "open"}
-      animate={isMobile ? (mobileOpen ? "open" : "closed") : (collapsed ? "collapsed" : "open")}
-      variants={sidebarVariants}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className={`fixed left-0 top-0 h-screen bg-white/90 backdrop-blur-xl border-r border-white/60 z-50 flex flex-col shadow-[4px_0_24px_-12px_rgba(0,0,0,0.05)]`}
-    >
-      {/* Brand */}
-      <div className="h-24 flex items-center px-6 border-b border-slate-100/50 justify-between">
-        <div className="flex items-center gap-3 overflow-hidden">
-          <Logo className="w-10 h-10 shrink-0" />
-          {(!collapsed || isMobile) && (
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.1 }}
-            >
-              <LogoText />
-            </motion.div>
+    <>
+      {isMobile && mobileOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
+          onClick={closeMobileMenu}
+        />
+      )}
+
+      <motion.aside
+        initial={isMobile ? 'closed' : 'open'}
+        animate={isMobile ? (mobileOpen ? 'open' : 'closed') : (collapsed ? 'collapsed' : 'open')}
+        variants={sidebarVariants}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        className="fixed left-0 top-0 h-screen bg-white dark:bg-slate-900 border-r border-slate-200/60 dark:border-slate-800 z-50 flex flex-col shadow-[4px_0_24px_-12px_rgba(0,0,0,0.05)]"
+      >
+        {/* Brand */}
+        <div className="h-16 flex items-center px-5 border-b border-slate-100 dark:border-slate-800 justify-between shrink-0">
+          <button onClick={() => handleNavigate('/feed')} className="flex items-center gap-2.5 overflow-hidden">
+            <div className="h-9 w-9 bg-gradient-to-br from-carehire-600 to-teal-500 rounded-lg flex items-center justify-center text-white font-bold shadow-lg shadow-carehire-600/20 text-sm shrink-0">
+              CH
+            </div>
+            {(!collapsed || isMobile) && (
+              <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="font-bold text-slate-900 dark:text-white tracking-tight text-lg whitespace-nowrap">
+                Care<span className="text-carehire-600">Hire</span>
+              </motion.span>
+            )}
+          </button>
+          {isMobile && (
+            <button onClick={closeMobileMenu} className="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+              <X size={20} />
+            </button>
           )}
         </div>
-        
-        {/* Mobile Close Button */}
-        {isMobile && (
-          <button onClick={closeMobileMenu} className="p-2 text-slate-400 hover:bg-slate-100 rounded-lg">
-            <X size={20} />
+
+        {/* Profile Card */}
+        {(!collapsed || isMobile) && (
+          <div className="px-4 pt-4 pb-2">
+            <div
+              onClick={() => handleNavigate('/in/me')}
+              className="p-3 rounded-xl bg-gradient-to-br from-slate-50 to-carehire-50/30 dark:from-slate-800 dark:to-carehire-950/30 cursor-pointer hover:shadow-sm transition-all"
+            >
+              <div className="flex items-center gap-3">
+                <Avatar src={user?.avatarUrl} name={user ? `${user.firstName} ${user.lastName}` : ''} size="md" status="online" />
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-bold text-sm text-slate-900 dark:text-white truncate">{user?.firstName} {user?.lastName}</h4>
+                  <p className="text-xs text-slate-500 truncate">{user?.headline || user?.specialty || 'Medical Professional'}</p>
+                </div>
+              </div>
+              <div className="mt-3">
+                <ProgressBar value={profileStrength} label="Profile strength" size="sm" showPercentage={false} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Navigation */}
+        <div className="flex-1 py-4 px-3 space-y-1 overflow-y-auto overflow-x-hidden no-scrollbar">
+          {(!collapsed || isMobile) && (
+            <div className="text-[10px] font-bold text-slate-400/80 uppercase tracking-widest px-3 mb-2">Navigate</div>
+          )}
+          {navItems.map((item) => {
+            const isActive = activePage === item.id || location.pathname.startsWith(item.path);
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleNavigate(item.path)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative ${
+                  isActive
+                    ? 'bg-carehire-600 text-white shadow-lg shadow-carehire-600/25'
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-carehire-600 dark:hover:text-carehire-400'
+                } ${collapsed && !isMobile ? 'justify-center' : ''}`}
+              >
+                <item.icon size={20} className={`shrink-0 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-carehire-600 dark:group-hover:text-carehire-400'}`} />
+                {(!collapsed || isMobile) && (
+                  <span className="font-medium text-sm flex-1 text-left whitespace-nowrap">{item.label}</span>
+                )}
+                {item.badge && (!collapsed || isMobile) && (
+                  <span className="bg-carehire-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md">{item.badge}</span>
+                )}
+              </button>
+            );
+          })}
+
+          {(!collapsed || isMobile) ? (
+            <>
+              <div className="my-4 border-t border-slate-100 dark:border-slate-800" />
+              <div className="text-[10px] font-bold text-slate-400/80 uppercase tracking-widest px-3 mb-2">Explore</div>
+            </>
+          ) : (
+            <div className="my-4 border-t border-slate-100 dark:border-slate-800" />
+          )}
+
+          {secondaryItems.map((item) => {
+            const isActive = activePage === item.id || location.pathname.startsWith(item.path);
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleNavigate(item.path)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
+                  isActive
+                    ? 'bg-slate-100 dark:bg-slate-800 text-carehire-600 dark:text-carehire-400'
+                    : 'text-slate-500 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-300'
+                } ${collapsed && !isMobile ? 'justify-center' : ''}`}
+              >
+                <item.icon size={20} className="shrink-0" />
+                {(!collapsed || isMobile) && (
+                  <span className="font-medium text-sm whitespace-nowrap">{item.label}</span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Bottom */}
+        <div className="p-3 border-t border-slate-100 dark:border-slate-800 shrink-0">
+          <button
+            onClick={onLogout}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 transition-all ${
+              collapsed && !isMobile ? 'justify-center' : ''
+            }`}
+          >
+            <LogOut size={20} className="shrink-0" />
+            {(!collapsed || isMobile) && <span className="font-medium text-sm">Sign Out</span>}
+          </button>
+        </div>
+
+        {/* Collapse Toggle */}
+        {!isMobile && (
+          <button
+            onClick={toggleSidebar}
+            className="absolute -right-3 top-20 h-6 w-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full flex items-center justify-center shadow-md text-slate-400 hover:text-carehire-600 transition-colors z-50"
+          >
+            {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
           </button>
         )}
-      </div>
-
-      {/* Navigation */}
-      <div className="flex-1 py-8 px-4 space-y-2 overflow-y-auto overflow-x-hidden no-scrollbar">
-        <div className="text-xs font-bold text-slate-400/80 uppercase tracking-wider px-4 mb-4 whitespace-nowrap overflow-hidden">
-          {(!collapsed || isMobile) ? 'Main Menu' : '...'}
-        </div>
-        
-        {navItems.map((item) => {
-          const isActive = activePage === item.id;
-          return (
-            <button
-              key={item.id}
-              onClick={() => onNavigate(item.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 group relative
-                ${isActive 
-                  ? 'bg-[#00a651] text-white shadow-lg shadow-emerald-500/25' 
-                  : 'text-slate-500 hover:bg-emerald-50/50 hover:text-[#00a651]'
-                }`}
-            >
-              <item.icon size={22} className={`shrink-0 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-[#00a651]'}`} />
-              
-              {(!collapsed || isMobile) && (
-                <span className="font-semibold text-sm flex-1 text-left whitespace-nowrap overflow-hidden">{item.label}</span>
-              )}
-
-              {/* Active Indicator (Right Border) if collapsed, or standard visual */}
-              {isActive && collapsed && !isMobile && (
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-l-full"></div>
-              )}
-              
-              {/* Badge */}
-              {item.badge && (!collapsed || isMobile) && (
-                <span className={`${
-                  item.badge === 'NEW' ? 'bg-emerald-500' : 'bg-rose-500'
-                } text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md min-w-[18px] flex items-center justify-center shadow-sm ml-auto`}>
-                  {item.badge}
-                </span>
-              )}
-              {item.badge && collapsed && !isMobile && (
-                <span className={`absolute top-2 right-2 h-2 w-2 ${
-                  item.badge === 'NEW' ? 'bg-emerald-500' : 'bg-rose-500'
-                } rounded-full border-2 border-white`}></span>
-              )}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* User Profile Snippet */}
-      <div className="p-4 border-t border-slate-100">
-        <div className="flex items-center gap-2">
-            <div 
-            onClick={() => onNavigate('profile')}
-            className={`flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer flex-1 ${collapsed && !isMobile ? 'justify-center' : ''}`}
-            >
-            <div className="h-10 w-10 rounded-full bg-slate-200 overflow-hidden shrink-0 border-2 border-white shadow-sm">
-                <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=2070" className="h-full w-full object-cover" alt="User" />
-            </div>
-            {(!collapsed || isMobile) && (
-                <div className="flex-1 min-w-0">
-                <h4 className="font-bold text-sm text-slate-900 truncate">Dr. Sarah Jenkins</h4>
-                <p className="text-xs text-slate-500 truncate">Neurologist</p>
-                </div>
-            )}
-            </div>
-
-            {(!collapsed || isMobile) && (
-                <button 
-                    onClick={onLogout}
-                    className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                    title="Logout"
-                >
-                    <LogOut size={20} />
-                </button>
-            )}
-        </div>
-      </div>
-
-      {/* Desktop Collapse Toggle */}
-      {!isMobile && (
-        <button 
-          onClick={toggleSidebar}
-          className="absolute -right-3 top-24 h-6 w-6 bg-white border border-slate-200 rounded-full flex items-center justify-center shadow-md text-slate-400 hover:text-emerald-600 transition-colors z-50"
-        >
-          {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
-        </button>
-      )}
-    </motion.aside>
+      </motion.aside>
+    </>
   );
 };
 

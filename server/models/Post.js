@@ -30,12 +30,50 @@ const Post = sequelize.define('Post', {
   commentsCount: {
     type: DataTypes.INTEGER,
     defaultValue: 0
+  },
+  sharesCount: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  },
+  // Enhanced fields
+  mediaUrls: {
+    type: DataTypes.JSON,
+    defaultValue: []
+  },
+  mediaType: {
+    type: DataTypes.ENUM('none', 'image', 'video', 'document', 'poll'),
+    defaultValue: 'none'
+  },
+  pollOptions: {
+    type: DataTypes.JSON, // [{text, votes: 0}]
+    allowNull: true
+  },
+  pollExpiresAt: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  organizationId: {
+    type: DataTypes.UUID,
+    allowNull: true
+  },
+  sharedPostId: {
+    type: DataTypes.UUID,
+    allowNull: true
+  },
+  visibility: {
+    type: DataTypes.ENUM('public', 'connections', 'private'),
+    defaultValue: 'public'
+  },
+  reactionsCount: {
+    type: DataTypes.JSON,
+    defaultValue: { like: 0, celebrate: 0, support: 0, insightful: 0, curious: 0 }
   }
 }, {
   timestamps: true,
   indexes: [
     { fields: ['authorId'] },
-    { fields: ['type'] }
+    { fields: ['type'] },
+    { fields: ['organizationId'] }
   ]
 });
 
